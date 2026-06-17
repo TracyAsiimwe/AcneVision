@@ -1,0 +1,804 @@
+﻿{% extends "base.html" %}
+{% block title %}AcneVision - Analysis Results{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-2: #111118;
+      --bg-3: #1a1a24;
+      --card: #13131a;
+      --border: rgba(255,255,255,0.08);
+      --border-2: rgba(255,255,255,0.12);
+      --text: #e8e8ec;
+      --text-2: #9a9aa8;
+      --text-3: #6a6a78;
+      --rose: #c87a6b;
+      --rose-d: #a85e50;
+      --rose-glow: rgba(200,122,107,0.15);
+      --gold: #c9a96e;
+      --gold-d: #a88a50;
+      --white: #ffffff;
+      --green: #4caf7d;
+      --green-d: #3a8f5f;
+      --orange: #e67e22;
+      --red: #e74c3c;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+    nav { background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+    .nav-in { max-width:1200px; margin:0 auto; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-brand { display:flex; align-items:center; gap:12px; }
+    .nav-mark { width:36px; height:36px; background:linear-gradient(135deg,var(--rose),var(--gold)); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.9em; }
+    .nav-name { font-family:'DM Serif Display',serif; font-size:1.3em; color:var(--white); letter-spacing:-0.5px; }
+    .btn-back { display:inline-flex; align-items:center; gap:8px; padding:9px 20px; border-radius:10px; background:var(--bg-2); border:1px solid var(--border); color:var(--text-2); font-size:0.85em; font-weight:600; text-decoration:none; transition:all 0.25s; font-family:'DM Sans',sans-serif; }
+    .btn-back:hover { border-color:var(--rose); color:var(--rose); }
+
+    .wrap { max-width:1200px; margin:0 auto; padding:40px 32px 60px; }
+
+    @keyframes up { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+    .fade { animation:up 0.5s ease forwards; opacity:0; }
+    .d1{animation-delay:0.05s;} .d2{animation-delay:0.1s;}
+    .d3{animation-delay:0.15s;} .d4{animation-delay:0.2s;}
+    .d5{animation-delay:0.25s;} .d6{animation-delay:0.3s;}
+    .d7{animation-delay:0.35s;} .d8{animation-delay:0.4s;}
+
+    .card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:32px; margin-bottom:20px; }
+    .card-title { font-family:'DM Serif Display',serif; font-size:1.25em; color:var(--white); margin-bottom:22px; }
+
+    /* ── SEVERITY SCALE (Lovable-style) ── */
+    .sev-scale-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px; margin-bottom:20px; }
+    .sev-scale-eyebrow { font-size:0.72em; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:2.5px; margin-bottom:10px; }
+    .sev-scale-title { font-size:2.6em; font-weight:800; color:var(--white); margin-bottom:6px; letter-spacing:-1px; }
+    .sev-scale-conf { font-size:0.85em; color:var(--text-3); margin-bottom:22px; }
+    .sev-scale-conf strong { color:var(--text-2); }
+
+    .sev-bar-wrap { margin-bottom:10px; }
+    .sev-bar-track { height:10px; border-radius:6px; background:var(--bg-2); overflow:visible; position:relative; display:flex; }
+    .sev-segment { flex:1; height:100%; transition:opacity 0.3s; border-radius:0; }
+    .sev-segment:first-child { border-radius:6px 0 0 6px; }
+    .sev-segment:last-child  { border-radius:0 6px 6px 0; }
+    .sev-segment.active-seg  { box-shadow:0 0 12px currentColor; }
+    .seg-clear    { background:#059669; }
+    .seg-mild     { background:#d97706; }
+    .seg-moderate { background:#ea580c; }
+    .seg-severe   { background:#dc2626; }
+    .sev-bar-labels { display:flex; justify-content:space-between; margin-top:8px; font-size:0.72em; color:var(--text-3); font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+
+    .sev-desc { font-size:0.9em; color:var(--text-2); line-height:1.75; margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+
+    /* ── SKIN TYPE GRID (2×2) ── */
+    .skin-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px; }
+    .skin-cell { background:var(--card); padding:22px 24px; }
+    .skin-cell-label { font-size:0.72em; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+    .skin-cell-value { font-size:1.05em; font-weight:700; color:var(--white); }
+    .skin-cell-value.risk-high     { color:#dc2626; }
+    .skin-cell-value.risk-moderate { color:#ea580c; }
+    .skin-cell-value.risk-low      { color:#059669; }
+
+    /* ── DERMATOLOGIST ALERT ── */
+    .derm-alert { background:rgba(200,122,107,0.07); border:1px solid rgba(200,122,107,0.22); border-radius:16px; padding:24px 28px; margin-bottom:20px; display:flex; flex-direction:column; gap:14px; }
+    .derm-alert-top { display:flex; align-items:flex-start; gap:14px; }
+    .derm-alert-icon { font-size:1.3em; flex-shrink:0; margin-top:1px; }
+    .derm-alert-title { font-size:1em; font-weight:700; color:var(--white); margin-bottom:5px; }
+    .derm-alert-text  { font-size:0.88em; color:var(--text-2); line-height:1.7; }
+    .btn-find-derm { display:inline-flex; align-items:center; gap:8px; padding:12px 28px; border-radius:10px; background:linear-gradient(135deg,var(--rose),var(--rose-d)); color:white; font-size:0.88em; font-weight:700; text-decoration:none; transition:all 0.25s; font-family:'DM Sans',sans-serif; box-shadow:0 4px 16px rgba(200,122,107,0.3); align-self:flex-start; }
+    .btn-find-derm:hover { transform:translateY(-2px); box-shadow:0 6px 22px rgba(200,122,107,0.45); }
+
+    /* ── LESION BREAKDOWN ── */
+    .lesion-title { font-size:1.3em; font-weight:700; color:var(--white); margin-bottom:18px; }
+    .lesion-grid  { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .lesion-card  { background:var(--bg-2); border:1px solid var(--border); border-radius:14px; padding:20px; transition:all 0.25s; }
+    .lesion-card:hover { border-color:var(--border-2); transform:translateY(-2px); }
+    .lesion-head  { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .lesion-name  { display:flex; align-items:center; gap:9px; font-size:0.98em; font-weight:700; color:var(--white); }
+    .lesion-dot   { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .lesion-count { font-size:0.75em; font-weight:700; color:var(--text-2); background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:3px 10px; white-space:nowrap; }
+    .lesion-sev-bar { height:3px; background:var(--bg); border-radius:2px; overflow:hidden; margin:10px 0 6px; }
+    .lesion-sev-fill { height:100%; border-radius:2px; transition:width 1.4s ease; }
+    .lesion-desc  { font-size:0.83em; color:var(--text-2); margin-bottom:8px; line-height:1.5; }
+    .lesion-areas { font-size:0.78em; color:var(--text-3); }
+    .lesion-areas strong { color:var(--text-2); }
+    .lesion-subtitle { font-size:0.84em; color:var(--text-3); line-height:1.6; margin-bottom:18px; margin-top:-8px; font-style:italic; }
+    .lesion-note { font-size:0.78em; color:var(--gold); margin-top:8px; padding-top:8px; border-top:1px solid var(--border); line-height:1.5; }
+
+    /* ── AFFECTED ZONES ── */
+    .zones-title { font-size:1.3em; font-weight:700; color:var(--white); margin-bottom:18px; }
+    .zones-row   { display:flex; gap:10px; flex-wrap:wrap; }
+    .zone-chip   { flex:1; min-width:100px; background:var(--bg-2); border:1px solid var(--border); border-radius:14px; padding:16px 12px; text-align:center; cursor:default; transition:all 0.25s; }
+    .zone-chip:hover { border-color:var(--border-2); }
+    .zone-chip-label { font-size:0.68em; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+    .zone-chip-pct   { font-size:1.6em; font-weight:800; color:var(--white); line-height:1; margin-bottom:8px; }
+    .zone-chip-bar   { height:3px; background:var(--bg); border-radius:2px; overflow:hidden; }
+    .zone-chip-fill  { height:100%; border-radius:2px; background:var(--rose); transition:width 1.5s ease; }
+    .zone-chip-tap   { font-size:0.62em; color:var(--text-3); text-transform:uppercase; letter-spacing:1px; margin-top:7px; font-weight:600; }
+
+    /* ── IMAGES ── */
+    .img-row { display:flex; gap:18px; flex-wrap:wrap; justify-content:center; }
+    .img-box { flex:1; min-width:200px; max-width:420px; }
+    .img-row.single-img .img-box { max-width:480px; flex:0 1 480px; }
+    .img-box img { width:100%; border-radius:12px; border:1px solid var(--border); box-shadow:0 6px 24px rgba(0,0,0,0.3); transition:transform 0.3s; display:block; }
+    .img-box img:hover { transform:scale(1.03); }
+    .img-label { margin-top:10px; font-size:0.82em; color:var(--text-3); font-weight:500; text-align:center; }
+
+    /* ── ZONE DETAIL POPUP ── */
+    .zone-popup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); z-index:2000; align-items:center; justify-content:center; }
+    .zone-popup-overlay.open { display:flex; }
+    .zone-popup { background:#1a1a24; border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:28px; max-width:360px; width:90%; position:relative; animation:popIn .2s ease; }
+    @keyframes popIn { from{opacity:0;transform:scale(.94);} to{opacity:1;transform:scale(1);} }
+    .zone-popup-close { position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.08); border:none; color:var(--text-2); width:28px; height:28px; border-radius:50%; font-size:1em; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .zone-popup-close:hover { background:rgba(200,122,107,0.2); color:var(--rose); }
+    .zone-popup-name { font-size:0.68em; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
+    .zone-popup-pct { font-size:2.4em; font-weight:800; color:var(--white); line-height:1; margin-bottom:4px; }
+    .zone-popup-pct-label { font-size:0.75em; color:var(--text-3); margin-bottom:16px; }
+    .zone-popup-bar { height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; margin-bottom:20px; }
+    .zone-popup-bar-fill { height:100%; border-radius:3px; transition:width 1s ease; }
+    .zone-popup-section-label { font-size:0.68em; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; }
+    .zone-popup-lesions { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+    .zone-popup-lesion-tag { font-size:0.75em; font-weight:600; padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.05); color:var(--text-2); }
+    .zone-popup-tip { background:rgba(200,122,107,0.07); border:1px solid rgba(200,122,107,0.18); border-radius:10px; padding:12px 14px; font-size:0.82em; color:var(--text-2); line-height:1.6; }
+    .zone-popup-tip-label { font-size:0.68em; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:5px; }
+
+    /* ── RECOMMENDATIONS ── */
+    .rec-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+    .rec-card { background:var(--bg-2); border:1px solid var(--border); border-radius:14px; padding:24px; transition:all 0.25s; }
+    .rec-card:hover { box-shadow:0 6px 20px rgba(0,0,0,0.25); border-color:var(--border-2); }
+    .rec-label { font-size:0.74em; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+    .rec-title { font-size:1em; font-weight:700; color:var(--white); margin-bottom:8px; }
+    .rec-text  { font-size:0.86em; color:var(--text-2); line-height:1.7; }
+
+    /* ── DOWNLOAD ── */
+    .dl-btn { display:inline-flex; align-items:center; gap:10px; padding:14px 40px; border-radius:12px; background:linear-gradient(135deg,var(--rose),var(--rose-d)); color:white; font-size:0.92em; font-weight:600; text-decoration:none; transition:all 0.25s; font-family:'DM Sans',sans-serif; box-shadow:0 4px 20px rgba(200,122,107,0.25); }
+    .dl-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(200,122,107,0.35); }
+
+    /* ── MODAL ── */
+    .diag-modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(10,9,12,0.8); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+    .diag-modal-content { background:#ffffff; color:#1a1a24; border-radius:24px; width:90%; max-width:650px; max-height:85vh; overflow-y:auto; padding:40px; position:relative; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); animation:modalFadeIn 0.3s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes modalFadeIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    .diag-modal-close { position:absolute; top:24px; right:24px; background:#f4f4f6; border:none; width:36px; height:36px; border-radius:50%; font-size:20px; color:#52526b; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+    .diag-modal-close:hover { background:#e2e8f0; }
+    .diag-modal-title-row { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .diag-modal-dot { width:12px; height:12px; border-radius:50%; }
+    .diag-modal-name { font-family:'Playfair Display',Georgia,serif; font-size:1.8rem; font-weight:600; color:#1a1a24; margin:0; }
+    .diag-modal-scientific { font-size:0.95rem; color:#64748b; margin:0 0 24px 0; }
+    .diag-modal-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px; }
+    .diag-modal-tags .g-tag { background:#fcf8ee; color:#8a6d3b; font-size:0.78rem; font-weight:600; padding:6px 14px; border-radius:20px; border:1px solid rgba(138,109,59,0.15); }
+    .diag-modal-block { margin-bottom:24px; }
+    .diag-modal-block h5 { font-size:11px; font-weight:700; color:#c2612b; letter-spacing:1.5px; margin:0 0 8px 0; }
+    .diag-modal-block p  { font-size:0.95rem; color:#334155; line-height:1.6; margin:0; }
+    .diag-modal-list { margin:0; padding-left:20px; }
+    .diag-modal-list li { font-size:0.95rem; color:#334155; line-height:1.6; margin-bottom:6px; }
+
+    .rfooter { text-align:center; padding:28px; color:var(--text-3); font-size:0.82em; border-top:1px solid var(--border); margin-top:16px; line-height:1.7; }
+
+    @media(max-width:768px){
+      .img-row   { flex-direction:column; align-items:center; }
+      .img-box   { max-width:100%; }
+      .wrap      { padding:28px 20px 48px; }
+      .skin-grid { grid-template-columns:1fr 1fr; }
+      .lesion-grid { grid-template-columns:1fr; }
+      .zones-row { gap:7px; }
+      .zone-chip { min-width:80px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wrap">
+
+  <!-- ══ ANALYSIS IMAGES (moved to top) ══ -->
+  <div class="card fade d1">
+    <div class="card-title">Analysis Images</div>
+    <div class="img-row {% if not heatmap_image %}single-img{% endif %}">
+      <div class="img-box">
+        <img src="{{ url_for('static', filename='uploads/' ~ face_image) }}" alt="Face">
+        <div class="img-label">Detected Face</div>
+      </div>
+      {% if heatmap_image %}
+      <div class="img-box">
+        <img src="{{ url_for('static', filename='heatmaps/' ~ heatmap_image) }}" alt="Heatmap">
+        <div class="img-label">AI Focus Map — areas the model weighted most</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ══ SEVERITY SCALE CARD ══ -->
+  <div class="sev-scale-card fade d2">
+    <div class="sev-scale-eyebrow">Acne Severity</div>
+    <div class="sev-scale-title">{{ severity }}</div>
+    <div class="sev-scale-conf">
+      <strong>{{ confidence }}%</strong> confidence &nbsp;·&nbsp; {{ timestamp }}
+      {% if is_combined %}&nbsp;·&nbsp; <span style="opacity:0.7;">(Combined prediction)</span>{% endif %}
+    </div>
+
+    <!-- Gradient scale bar -->
+    <div class="sev-bar-wrap">
+      <div class="sev-bar-track">
+        <div class="sev-segment seg-clear    {% if raw_class == 'clear_skin' %}active-seg{% elif raw_class in ['mild','moderate','severe'] %}{% else %}{% endif %}"
+             style="opacity:{% if raw_class == 'clear_skin' %}1{% else %}0.35{% endif %}"></div>
+        <div class="sev-segment seg-mild     {% if raw_class == 'mild' %}active-seg{% endif %}"
+             style="opacity:{% if raw_class in ['mild','moderate','severe'] %}{% if raw_class == 'mild' %}1{% else %}0.35{% endif %}{% else %}0.25{% endif %}"></div>
+        <div class="sev-segment seg-moderate {% if raw_class == 'moderate' %}active-seg{% endif %}"
+             style="opacity:{% if raw_class in ['moderate','severe'] %}{% if raw_class == 'moderate' %}1{% else %}0.35{% endif %}{% else %}0.2{% endif %}"></div>
+        <div class="sev-segment seg-severe   {% if raw_class == 'severe' %}active-seg{% endif %}"
+             style="opacity:{% if raw_class == 'severe' %}1{% else %}0.15{% endif %}"></div>
+      </div>
+      <div class="sev-bar-labels">
+        <span>Clear</span><span>Mild</span><span>Moderate</span><span>Severe</span>
+      </div>
+    </div>
+
+    <div class="sev-desc">{{ ai_summary }}</div>
+
+    <!-- Click to expand evidence -->
+  </div>
+
+  <!-- ══ SKIN TYPE / INFLAMMATION / SCARRING / ACTION GRID ══ -->
+  <div class="skin-grid fade d2">
+    <div class="skin-cell">
+      <div class="skin-cell-label">Skin Type</div>
+      <div class="skin-cell-value">{{ skin_type }}</div>
+    </div>
+    <div class="skin-cell">
+      <div class="skin-cell-label">Inflammation</div>
+      <div class="skin-cell-value
+        {% if inflammation_label == 'Severe'   %}risk-high
+        {% elif inflammation_label == 'Moderate'%}risk-moderate
+        {% else %}{% endif %}">{{ inflammation_label }}</div>
+    </div>
+    <div class="skin-cell">
+      <div class="skin-cell-label">Scarring Risk</div>
+      <div class="skin-cell-value
+        {% if scarring_risk == 'High'     %}risk-high
+        {% elif scarring_risk == 'Moderate'%}risk-moderate
+        {% else %}risk-low{% endif %}">{{ scarring_risk }}</div>
+    </div>
+    <div class="skin-cell">
+      <div class="skin-cell-label">Action</div>
+      <div class="skin-cell-value">{{ action_label }}</div>
+    </div>
+  </div>
+
+  <!-- ══ FIND A DERMATOLOGIST ALERT (mild / moderate / severe only) ══ -->
+  {% if show_find_derm %}
+  <div class="derm-alert fade d3">
+    <div class="derm-alert-top">
+      <span class="derm-alert-icon">⚠️</span>
+      <div>
+        <div class="derm-alert-title">A dermatologist visit is recommended</div>
+        <div class="derm-alert-text">
+          {% if raw_class == 'severe' %}
+            Professional guidance is strongly recommended. Severe acne can lead to permanent scarring without appropriate medical treatment. A dermatologist can prescribe oral or topical prescription-strength treatments tailored to your skin.
+          {% elif raw_class == 'moderate' %}
+            Professional guidance is recommended to manage the inflammatory acne effectively while simultaneously treating any post-inflammatory hyperpigmentation, which is highly responsive to prescription-strength retinoids or azelaic acid.
+          {% else %}
+            A dermatologist can help you establish the right treatment plan early — catching mild acne before it progresses to moderate or severe stages is much easier with professional guidance.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('clinics') }}" class="btn-find-derm">
+      🗺 Find a dermatologist
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- ══ LESION BREAKDOWN ══ -->
+  {% if lesion_breakdown %}
+  <div class="card fade d3">
+    <div class="lesion-title">What's on your skin</div>
+    <p class="lesion-subtitle">Based on visual analysis of your uploaded image, the following lesion types were identified. Counts are estimates — consult a dermatologist for a clinical diagnosis.</p>
+    <div class="lesion-grid">
+      {% for lesion in lesion_breakdown %}
+      <div class="lesion-card">
+        <div class="lesion-head">
+          <div class="lesion-name">
+            <span class="lesion-dot" style="background:{{ lesion.color }};"></span>
+            {{ lesion.name }}
+          </div>
+          <span class="lesion-count">
+            ~{{ lesion.count }} estimated
+          </span>
+        </div>
+        <div class="lesion-desc">{{ lesion.description }}</div>
+        <div class="lesion-sev-bar">
+          <div class="lesion-sev-fill"
+               data-w="{{ lesion.severity_pct | default(50) }}"
+               style="width:0%; background:{{ lesion.color }};"></div>
+        </div>
+        <div class="lesion-areas"><strong>Primary areas:</strong> {{ lesion.areas }}</div>
+        {% if lesion.clinical_note %}
+        <div class="lesion-note">⚑ {{ lesion.clinical_note }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ══ WHAT WE OBSERVED ══ -->
+  <div class="card fade d4">
+    <div class="card-title">What we observed</div>
+    <p style="font-size:0.92em; color:var(--text-2); line-height:1.8;">{{ what_we_observed }}</p>
+  </div>
+
+  <!-- ══ WHAT THIS MEANS ══ -->
+  <div class="card fade d4">
+    <div class="card-title">What this means</div>
+    <p style="font-size:0.92em; color:var(--text-2); line-height:1.8;">{{ what_this_means }}</p>
+  </div>
+
+  <!-- ══ AFFECTED FACIAL ZONES ══ -->
+  <div class="card fade d5">
+    <div class="zones-title">Affected facial zones</div>
+    <div class="zones-row">
+      {% set zones_list = [
+        ('FOREHEAD', zone_percentages.forehead),
+        ('CHEEKS',   zone_percentages.cheeks),
+        ('NOSE',     zone_percentages.nose),
+        ('CHIN',     zone_percentages.chin),
+        ('JAWLINE',  zone_percentages.jawline),
+      ] %}
+      {% for zone_name, zone_pct in zones_list %}
+      <div class="zone-chip" onclick="openZonePopup('{{ zone_name }}', {{ zone_pct }})">
+        <div class="zone-chip-label">{{ zone_name }}</div>
+        <div class="zone-chip-pct">{{ zone_pct }}%</div>
+        <div class="zone-chip-bar">
+          <div class="zone-chip-fill" data-w="{{ zone_pct }}" style="width:0%;
+            background: {% if zone_pct >= 70 %}#dc2626{% elif zone_pct >= 40 %}#ea580c{% elif zone_pct >= 15 %}#d97706{% else %}#059669{% endif %};"></div>
+        </div>
+        <div class="zone-chip-tap">Tap for details</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ══ ZONE DETAIL POPUP ══ -->
+  <div class="zone-popup-overlay" id="zone-popup-overlay" onclick="closeZonePopup(event)">
+    <div class="zone-popup">
+      <button class="zone-popup-close" onclick="closeZonePopup(null, true)">×</button>
+      <div class="zone-popup-name" id="zp-name"></div>
+      <div class="zone-popup-pct" id="zp-pct"></div>
+      <div class="zone-popup-pct-label">affected</div>
+      <div class="zone-popup-bar">
+        <div class="zone-popup-bar-fill" id="zp-bar"></div>
+      </div>
+      <div class="zone-popup-section-label">Lesion types found</div>
+      <div class="zone-popup-lesions" id="zp-lesions"></div>
+      <div class="zone-popup-tip-label">Tip for this zone</div>
+      <div class="zone-popup-tip" id="zp-tip"></div>
+    </div>
+  </div>
+
+  <!-- ══ RECOMMENDATIONS ══ -->
+  <div class="card fade d8">
+    <div class="card-title">Recommendations</div>
+    <div class="rec-grid">
+      {% for rec in recommendations %}
+      <div class="rec-card">
+        <div class="rec-label">{{ rec.label }}</div>
+        <div class="rec-title">{{ rec.title }}</div>
+        <div class="rec-text">{{ rec.text }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ══ DOWNLOAD REPORT ══ -->
+  {% if report_file %}
+  <div class="card fade d7" style="text-align:center;">
+    <div class="card-title">Full Report</div>
+    <p style="font-size:0.88em;color:var(--text-2);margin-bottom:24px;">Download a complete HTML report with all findings and recommendations</p>
+    <a href="{{ url_for('static', filename='reports/' ~ report_file) }}" class="dl-btn" target="_blank">Download Report</a>
+  </div>
+  {% endif %}
+
+  <div class="rfooter">AcneVision &copy; 2026. All rights reserved.</div>
+</div><!-- /wrap -->
+
+<!-- ══ DIAGNOSIS MODAL ══ -->
+<div id="diagnosisModal" class="diag-modal">
+  <div class="diag-modal-content">
+    <button class="diag-modal-close" onclick="closeDiagnosisModal()">&times;</button>
+    <div class="diag-modal-title-row">
+      <span id="modalDot" class="diag-modal-dot"></span>
+      <h4 id="modalName" class="diag-modal-name">Condition Name</h4>
+    </div>
+    <p id="modalScientific" class="diag-modal-scientific">Scientific definition here</p>
+    <div id="modalTags" class="diag-modal-tags"></div>
+    <div class="diag-modal-block">
+      <h5>WHAT IT IS</h5>
+      <p id="modalWhatItIs"></p>
+    </div>
+    <div class="diag-modal-block">
+      <h5>HOW IT FORMS</h5>
+      <p id="modalHowItForms"></p>
+    </div>
+    <div class="diag-modal-block">
+      <h5>COMMON CAUSES</h5>
+      <ul id="modalCauses" class="diag-modal-list"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FLOATING CHAT WIDGET ══ -->
+<div id="chat-fab" onclick="openChat()">
+  <div id="fab-face">
+    <div class="fe fe-l"></div><div class="fe fe-r"></div>
+    <div class="fe fe-m"></div><div class="fe fe-a"></div>
+  </div>
+  <div id="fab-ring"></div>
+</div>
+<div id="fab-tip">Ask me about your skin! 👋</div>
+
+<div id="chat-win">
+  <div id="cw-head">
+    <div class="cw-head-left">
+      <div id="head-face">
+        <div class="hf hf-l"></div><div class="hf hf-r"></div>
+        <div class="hf hf-m"></div><div class="hf hf-a"></div>
+        <div class="hf-shine"></div>
+      </div>
+      <div>
+        <div class="cw-name">Skin Assistant</div>
+        <div class="cw-sub">Always here, judgement-free</div>
+      </div>
+    </div>
+    <button class="cw-close" onclick="closeChat()">×</button>
+  </div>
+  <div id="cw-msgs"></div>
+  <div id="cw-chips">
+    <button class="cchip" onclick="qs('What does my result mean?')">My result</button>
+    <button class="cchip" onclick="qs('What treatment should I use?')">Treatment</button>
+    <button class="cchip" onclick="qs('Should I see a dermatologist?')">See doctor?</button>
+    <button class="cchip" onclick="qs('How long to clear my skin?')">Timeline</button>
+    <button class="cchip" onclick="qs('What foods cause acne?')">Diet tips</button>
+  </div>
+  <div id="cw-foot">
+    <textarea id="cw-in" placeholder="Ask about your skin..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cwSend();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"></textarea>
+    <button id="cw-send" onclick="cwSend()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+        <path d="M22 2L11 13" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div id="cw-disc">For informational purposes only. Not a substitute for professional medical advice.</div>
+</div>
+
+<style>
+body.theme-dark { --bg:#0f1117; --bg2:#1a1d27; --bg3:#22263a; --card-bg:#1e2230; --card-border:#2e3347; --text:#e8eaf0; --text-2:#a0a8c0; --text-3:#6b7490; --accent:#00d4aa; --btn-bg:#00c49a; --btn-hover:#00a882; --nav-bg:#131620; --nav-border:#1e2230; --input-bg:#1a1d27; --input-brd:#2e3347; --bubble-bot:#1e2230; --bubble-brd:#2e3347; --bubble-txt:#e8eaf0; --chip-bg:#1a1d27; --chip-brd:#2e3347; --chip-txt:#a0a8c0; --disc-txt:#4a5068; --sev-badge:#00c49a; }
+body.theme-light { --bg:#fff5f7; --bg2:#fff0f3; --bg3:#ffe5ea; --card-bg:#ffffff; --card-border:#f8c8d2; --text:#2d1a20; --text-2:#6d3a48; --text-3:#b07080; --accent:#e8426a; --btn-bg:#e8426a; --btn-hover:#c93059; --nav-bg:#ffffff; --nav-border:#f8c8d2; --input-bg:#fff5f7; --input-brd:#f8c8d2; --bubble-bot:#ffffff; --bubble-brd:#f8c8d2; --bubble-txt:#2d1a20; --chip-bg:#fff5f7; --chip-brd:#f8c8d2; --chip-txt:#6d3a48; --disc-txt:#c0a0a8; --sev-badge:#e8426a; }
+body.theme-dark, body.theme-light { background:var(--bg)!important; color:var(--text)!important; transition:background .35s,color .35s; }
+body.theme-dark nav, body.theme-light nav { background:var(--nav-bg)!important; border-color:var(--nav-border)!important; }
+body.theme-dark .card, body.theme-light .card, body.theme-dark .sev-scale-card, body.theme-light .sev-scale-card, body.theme-dark .score-wrap, body.theme-light .score-wrap, body.theme-dark .rec-card, body.theme-light .rec-card { background:var(--card-bg)!important; border-color:var(--card-border)!important; color:var(--text)!important; transition:background .35s,border-color .35s; }
+body.theme-light .card-title, body.theme-light .sev-scale-title, body.theme-light .lesion-title, body.theme-light .zones-title, body.theme-light .rec-title, body.theme-light .score-title { color:var(--text)!important; }
+body.theme-light .rec-text, body.theme-light .score-sub { color:var(--text-2)!important; }
+body.theme-light .skin-grid { background:var(--card-border)!important; }
+body.theme-light .skin-cell { background:var(--card-bg)!important; }
+body.theme-light .skin-cell-label { color:var(--text-3)!important; }
+body.theme-light .skin-cell-value { color:var(--text)!important; }
+body.theme-light .lesion-card, body.theme-light .zone-chip { background:var(--bg3)!important; border-color:var(--card-border)!important; }
+body.theme-light .derm-alert { background:rgba(232,66,106,0.06)!important; border-color:rgba(232,66,106,0.2)!important; }
+body.theme-light #chat-fab { background:#fff5f7; box-shadow:0 2px 8px rgba(0,0,0,0.1); border:1px solid #f8c8d2; }
+body.theme-light #fab-ring { display:none; }
+body.theme-light #cw-send { background:#e8426a; box-shadow:none; }
+body.theme-light #cw-send:hover:not(:disabled) { box-shadow:none; }
+
+#theme-toggle { position:fixed; top:80px; right:18px; width:42px; height:42px; border-radius:50%; border:2px solid var(--card-border,#2e3347); background:var(--card-bg,#1e2230); color:var(--text,#e8eaf0); font-size:1.2em; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 12px rgba(0,0,0,0.2); z-index:500; transition:all .25s; }
+#theme-toggle:hover { transform:scale(1.12); }
+
+#chat-fab { position:fixed; bottom:20px; right:20px; width:44px; height:44px; border-radius:50%; background:#1e2230; border:1px solid var(--card-border,#2e3347); cursor:pointer; z-index:9000; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.25); transition:transform .2s, box-shadow .2s; user-select:none; }
+#chat-fab:hover { transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+#fab-ring { display:none; }
+@keyframes fabring { 0%{transform:scale(1);opacity:.8;} 100%{transform:scale(1.9);opacity:0;} }
+#fab-face { position:relative; width:24px; height:20px; background:rgba(255,255,255,0.12); border-radius:6px; }
+.fe { position:absolute; background:#a0a8c0; border-radius:50%; }
+.fe-l { top:5px; left:4px; width:5px; height:5px; }
+.fe-r { top:5px; right:4px; width:5px; height:5px; }
+.fe-m { bottom:4px; left:50%; transform:translateX(-50%); width:9px; height:4px; background:transparent; border-bottom:2px solid #a0a8c0; border-left:2px solid #a0a8c0; border-right:2px solid #a0a8c0; border-radius:0 0 5px 5px; }
+.fe-a { display:none; }
+.fe-a::after { display:none; }
+@keyframes aglow { 0%,100%{box-shadow:0 0 5px #00d4aa;} 50%{box-shadow:0 0 14px #00d4aa,0 0 22px #00aef0;} }
+#fab-tip { display:none; }
+
+#chat-win { position:fixed; bottom:72px; right:20px; width:280px; height:380px; background:var(--card-bg,#1e2230); border-radius:14px; box-shadow:0 6px 24px rgba(0,0,0,0.2); border:1px solid var(--card-border,#2e3347); display:none; flex-direction:column; overflow:hidden; z-index:9001; font-family:'DM Sans',sans-serif; transition:background .35s,border-color .35s; }
+#chat-win.open { display:flex; animation:winpop .2s ease; }
+@keyframes winpop { from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);} }
+#cw-head { background:#262b3d; padding:10px 12px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; color:white; }
+.cw-head-left { display:flex; align-items:center; gap:8px; }
+#head-face { position:relative; width:26px; height:22px; background:rgba(255,255,255,0.1); border-radius:7px; flex-shrink:0; }
+.hf { position:absolute; background:#a0a8c0; border-radius:50%; }
+.hf-l { top:5px; left:5px; width:5px; height:6px; }
+.hf-r { top:5px; right:5px; width:5px; height:6px; }
+@keyframes blink { 0%,88%,100%{transform:scaleY(1);} 94%{transform:scaleY(.1);} }
+.hf-m { position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:9px; height:4px; background:transparent; border-bottom:2px solid #a0a8c0; border-left:2px solid #a0a8c0; border-right:2px solid #a0a8c0; border-radius:0 0 5px 5px; }
+.hf-a { display:none; }
+.hf-a::after { display:none; }
+.hf-shine { display:none; }
+.cw-name { font-weight:600; color:#e8eaf0; font-size:0.82em; }
+.cw-sub  { font-size:0.65em; color:rgba(255,255,255,.55); display:flex; align-items:center; gap:5px; margin-top:1px; }
+
+.cw-close { background:rgba(255,255,255,.1); border:none; color:white; width:24px; height:24px; border-radius:50%; font-size:1.1em; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+.cw-close:hover { background:rgba(255,255,255,.2); }
+#cw-msgs { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; background:var(--bg2,#1a1d27); scroll-behavior:smooth; transition:background .35s; }
+#cw-msgs::-webkit-scrollbar { width:3px; }
+#cw-msgs::-webkit-scrollbar-thumb { background:var(--card-border,#2e3347); border-radius:2px; }
+.crow { display:flex; gap:8px; align-items:flex-end; animation:bubin .22s ease; }
+.crow.u { flex-direction:row-reverse; }
+@keyframes bubin { from{opacity:0;transform:translateY(7px);} to{opacity:1;transform:translateY(0);} }
+.cav { width:27px; height:27px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.75em; font-weight:700; }
+.cav-b { background:linear-gradient(135deg,#00d4aa,#00aef0); color:white; font-size:.9em; }
+.cav-u { background:#1e2d3d; color:white; font-size:.7em; }
+.cbbl { max-width:78%; padding:10px 14px; border-radius:15px; font-size:.855em; line-height:1.6; }
+.cbbl-b { background:var(--bubble-bot,#1e2230); color:var(--bubble-txt,#e8eaf0); border:1px solid var(--bubble-brd,#2e3347); border-bottom-left-radius:3px; transition:background .35s,color .35s; }
+.cbbl-u { background:linear-gradient(135deg,#00c49a,#0099d4); color:white; border-bottom-right-radius:3px; }
+.cbbl-e { background:#3a1a1a; color:#ff9090; border:1px solid #5a2020; border-bottom-left-radius:3px; }
+.tdots { display:flex; gap:4px; align-items:center; padding:3px 2px; }
+.tdots span { width:7px; height:7px; border-radius:50%; background:var(--text-3,#6b7490); animation:td 1.2s infinite; }
+.tdots span:nth-child(2){animation-delay:.2s;} .tdots span:nth-child(3){animation-delay:.4s;}
+@keyframes td { 0%,100%{transform:translateY(0);opacity:.4;} 50%{transform:translateY(-5px);opacity:1;} }
+#cw-chips { padding:8px 12px; display:flex; gap:6px; flex-wrap:nowrap; overflow-x:auto; flex-shrink:0; border-top:1px solid var(--card-border,#2e3347); background:var(--bg3,#22263a); transition:background .35s,border-color .35s; }
+#cw-chips::-webkit-scrollbar { display:none; }
+.cchip { padding:5px 11px; border-radius:18px; flex-shrink:0; font-size:.73em; font-weight:600; white-space:nowrap; border:1.5px solid var(--chip-brd,#2e3347); background:var(--chip-bg,#1a1d27); color:var(--chip-txt,#a0a8c0); cursor:pointer; transition:all .18s; font-family:'DM Sans',sans-serif; }
+.cchip:hover:not(:disabled) { border-color:var(--accent,#00d4aa); color:var(--accent,#00d4aa); }
+.cchip:disabled { opacity:.4; cursor:not-allowed; }
+#cw-foot { padding:10px 12px; border-top:1px solid var(--card-border,#2e3347); display:flex; gap:8px; align-items:flex-end; background:var(--card-bg,#1e2230); flex-shrink:0; transition:background .35s; }
+#cw-in { flex:1; padding:10px 12px; border:1.5px solid var(--input-brd,#2e3347); border-radius:11px; font-size:.86em; font-family:'DM Sans',sans-serif; background:var(--input-bg,#1a1d27); color:var(--text,#e8eaf0); outline:none; resize:none; min-height:40px; max-height:100px; line-height:1.4; transition:border-color .2s,background .35s,color .35s; }
+#cw-in:focus { border-color:var(--accent,#00d4aa); }
+#cw-in:disabled { opacity:.5; }
+#cw-in::placeholder { color:var(--text-3,#6b7490); }
+#cw-send { width:34px; height:34px; border-radius:9px; flex-shrink:0; background:#3a3f54; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:none; transition:all .2s; }
+#cw-send:hover:not(:disabled) { transform:none; box-shadow:none; background:#454b63; }
+#cw-send:disabled { opacity:.4; cursor:not-allowed; }
+#cw-disc { text-align:center; font-size:.67em; color:var(--disc-txt,#4a5068); padding:4px 12px 8px; background:var(--card-bg,#1e2230); flex-shrink:0; transition:background .35s,color .35s; }
+@media(max-width:480px){ #chat-win{width:calc(100vw - 20px);right:10px;bottom:82px;} #chat-fab{bottom:18px;right:18px;} }
+</style>
+
+<script>
+// ── Flask context ──────────────────────────────────────────
+const _SEV   = {{ severity    | tojson }};
+const _SCORE = {{ health_score | tojson }};
+const _UINIT = ({{ current_user.username | tojson }})[0].toUpperCase();
+
+let _open=false, _busy=false, _welcome=false, _tyEl=null;
+
+// ── THEME ─────────────────────────────────────────────────
+function initTheme(){
+  const saved=localStorage.getItem('av-theme')||'dark';
+  applyTheme(saved);
+}
+function applyTheme(t){
+  document.body.classList.remove('theme-dark','theme-light');
+  document.body.classList.add('theme-'+t);
+  const icon=document.getElementById('theme-icon');
+  if(icon) icon.textContent=t==='dark'?'☀️':'🌙';
+  const btn=document.getElementById('theme-toggle');
+  if(btn){
+    btn.style.background  =t==='dark'?'#1e2230':'#fff5f7';
+    btn.style.borderColor =t==='dark'?'#2e3347':'#f8c8d2';
+    btn.style.color       =t==='dark'?'#e8eaf0':'#6d3a48';
+  }
+}
+function toggleTheme(){
+  const isDark=document.body.classList.contains('theme-dark');
+  const next=isDark?'light':'dark';
+  localStorage.setItem('av-theme',next);
+  applyTheme(next);
+}
+initTheme();
+
+// ── ANIMATE BARS ───────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.zone-chip-fill, .lesion-sev-fill').forEach(el=>{
+    const w=el.getAttribute('data-w')||'0';
+    el.style.width='0%';
+    setTimeout(()=>{ el.style.width=w+'%'; },300);
+  });
+});
+
+// ── SPEECH BUBBLE ──────────────────────────────────────────
+setTimeout(()=>{
+  if(!_open){
+    const t=document.getElementById('fab-tip');
+    if(t){t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4500);}
+  }
+},3000);
+
+// ── OPEN / CLOSE CHAT ─────────────────────────────────────
+function openChat(){
+  _open=true;
+  document.getElementById('chat-win').classList.add('open');
+  document.getElementById('chat-fab').style.display='none';
+  document.getElementById('fab-tip').style.display='none';
+  if(!_welcome){_welcome=true;_checkStatus();_doWelcome();}
+  _scroll();
+}
+function closeChat(){
+  _open=false;
+  document.getElementById('chat-win').classList.remove('open');
+  document.getElementById('chat-fab').style.display='flex';
+  document.getElementById('fab-tip').style.display='block';
+}
+
+// ── CHATBOT STATUS ─────────────────────────────────────────
+async function _checkStatus(){
+  try{
+    const r=await fetch('/chatbot/status');
+    const d=await r.json();
+    if(d.online){_setDisabled(false);}
+    else{_setDisabled(true);
+      _addBubble('e','The assistant is currently unavailable. Please try again in a moment.');}
+  }catch(e){_setDisabled(true);}
+}
+
+// ── WELCOME ────────────────────────────────────────────────
+function _doWelcome(){
+  const raw=(_SEV||'').toLowerCase().replace(/\s+/g,'_').replace(/_acne$/,'');
+  const greets={
+    clear_skin:`Hi! 👋 Great news — your scan shows <strong>Clear Skin</strong>. I can help you maintain that. What would you like to know?`,
+    mild:`Hi! 👋 Your scan shows <strong>Mild Acne</strong> (health score ${_SCORE}/100). Mild acne responds well to treatment. What would you like to know?`,
+    moderate:`Hi! 👋 Your scan shows <strong>Moderate Acne</strong> (health score ${_SCORE}/100). I can explain what this means and suggest next steps. What would you like to ask?`,
+    severe:`Hi! 👋 Your scan shows <strong>Severe Acne</strong> (health score ${_SCORE}/100). I strongly recommend seeing a dermatologist. How can I help you?`,
+  };
+  _addBubble('b',greets[raw]||`Hi! 👋 I can see your skin analysis results. Ask me anything about acne or skincare!`);
+}
+
+// ── SEND ───────────────────────────────────────────────────
+async function cwSend(){
+  const inp=document.getElementById('cw-in');
+  const msg=inp.value.trim();
+  if(!msg||_busy) return;
+  inp.value=''; inp.style.height='auto';
+  await _send(msg);
+}
+function qs(msg){if(!_busy)_send(msg);}
+async function _send(msg){
+  _busy=true; _setDisabled(true); _addBubble('u',msg);
+
+  // Create bot bubble now — we'll stream text into it
+  const msgs=document.getElementById('cw-msgs');
+  const row=document.createElement('div'); row.className='crow';
+  const av=document.createElement('div'); av.className='cav cav-b'; av.innerHTML='🩺';
+  const bbl=document.createElement('div'); bbl.className='cbbl cbbl-b';
+  bbl.innerHTML='<div class="tdots"><span></span><span></span><span></span></div>';
+  row.appendChild(av); row.appendChild(bbl); msgs.appendChild(row); _scroll();
+
+  try{
+    const res=await fetch('/chatbot/stream',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg,severity:_SEV,health_score:_SCORE})});
+
+    if(!res.ok||!res.body){
+      bbl.className='cbbl cbbl-e';
+      bbl.innerHTML='Server error. Please try again.';
+      _busy=false; _setDisabled(false); return;
+    }
+
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let fullText=''; let firstChunk=true;
+
+    while(true){
+      const{done,value}=await reader.read();
+      if(done) break;
+      const chunk=decoder.decode(value,{stream:true});
+      if(chunk){
+        if(firstChunk){bbl.innerHTML=''; firstChunk=false;}
+        fullText+=chunk;
+        bbl.innerHTML=_fmt(fullText);
+        _scroll();
+      }
+    }
+
+    if(!fullText){bbl.innerHTML='No response received. Please try again.';}
+  }catch(err){
+    bbl.className='cbbl cbbl-e';
+    bbl.innerHTML='Cannot reach the server. Make sure Ollama is running (ollama serve).';
+  }
+  _busy=false; _setDisabled(false); document.getElementById('cw-in').focus();
+}
+
+// ── DOM HELPERS ────────────────────────────────────────────
+function _addBubble(type,html){
+  const msgs=document.getElementById('cw-msgs');
+  const row=document.createElement('div');
+  row.className='crow'+(type==='u'?' u':'');
+  const av=document.createElement('div');
+  av.className='cav '+(type==='u'?'cav-u':'cav-b');
+  av.innerHTML=type==='u'?_UINIT:'🩺';
+  const bbl=document.createElement('div');
+  bbl.className='cbbl '+(type==='u'?'cbbl-u':type==='e'?'cbbl-e':'cbbl-b');
+  bbl.innerHTML=_fmt(html);
+  if(type==='u'){row.appendChild(bbl);row.appendChild(av);}
+  else{row.appendChild(av);row.appendChild(bbl);}
+  msgs.appendChild(row); _scroll();
+}
+function _fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>');}
+function _showTyping(){
+  const msgs=document.getElementById('cw-msgs');
+  _tyEl=document.createElement('div'); _tyEl.className='crow';
+  _tyEl.innerHTML=`<div class="cav cav-b">🩺</div><div class="cbbl cbbl-b"><div class="tdots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(_tyEl); _scroll();
+}
+function _hideTyping(){if(_tyEl){_tyEl.remove();_tyEl=null;}}
+function _setDisabled(v){
+  document.getElementById('cw-send').disabled=v;
+  document.getElementById('cw-in').disabled=v;
+  document.querySelectorAll('.cchip').forEach(c=>c.disabled=v);
+}
+function _scroll(){const m=document.getElementById('cw-msgs');setTimeout(()=>m.scrollTop=m.scrollHeight,50);}
+
+// ── ZONE DATA (lesions from actual analysis, tips preset) ──
+const _ZONE_DATA = {
+  FOREHEAD: {
+    lesions: {{ zone_lesions.forehead | tojson if zone_lesions is defined else '["No specific lesions detected"]' }},
+    tip: "Often linked to stress, sweat, or hair products. Switch to non-comedogenic hair products, cleanse post-workout, and manage stress levels."
+  },
+  CHEEKS: {
+    lesions: {{ zone_lesions.cheeks | tojson if zone_lesions is defined else '["No specific lesions detected"]' }},
+    tip: "Often linked to pillowcase hygiene and phone contact. Change pillowcases 2x/week and wipe down your phone screen daily."
+  },
+  NOSE: {
+    lesions: {{ zone_lesions.nose | tojson if zone_lesions is defined else '["No specific lesions detected"]' }},
+    tip: "T-zone area — use a gentle BHA (salicylic acid) 2–3x/week and avoid heavy occlusive products here."
+  },
+  CHIN: {
+    lesions: {{ zone_lesions.chin | tojson if zone_lesions is defined else '["No specific lesions detected"]' }},
+    tip: "Often hormonal. Track flare-ups against your cycle and avoid resting your hand on your chin throughout the day."
+  },
+  JAWLINE: {
+    lesions: {{ zone_lesions.jawline | tojson if zone_lesions is defined else '["No specific lesions detected"]' }},
+    tip: "Typically hormonal or diet-driven. Consider reducing high-glycemic foods and dairy if breakouts cluster here, and see a dermatologist if persistent."
+  }
+};
+
+const _BAR_COLORS = { 0: '#059669', 15: '#d97706', 40: '#ea580c', 70: '#dc2626' };
+function _zoneColor(pct) {
+  if (pct >= 70) return '#dc2626';
+  if (pct >= 40) return '#ea580c';
+  if (pct >= 15) return '#d97706';
+  return '#059669';
+}
+
+function openZonePopup(zone, pct) {
+  const data = _ZONE_DATA[zone] || { lesions: ['No data'], tip: '' };
+  document.getElementById('zp-name').textContent = zone;
+  document.getElementById('zp-pct').textContent = pct + '%';
+  const bar = document.getElementById('zp-bar');
+  bar.style.background = _zoneColor(pct);
+  bar.style.width = '0%';
+  setTimeout(() => bar.style.width = pct + '%', 50);
+
+  const lesionsEl = document.getElementById('zp-lesions');
+  lesionsEl.innerHTML = '';
+  if (data.lesions && data.lesions.length) {
+    data.lesions.forEach(l => {
+      const tag = document.createElement('span');
+      tag.className = 'zone-popup-lesion-tag';
+      tag.textContent = l;
+      lesionsEl.appendChild(tag);
+    });
+  } else {
+    lesionsEl.innerHTML = '<span class="zone-popup-lesion-tag">No specific lesions detected</span>';
+  }
+  document.getElementById('zp-tip').textContent = data.tip;
+  document.getElementById('zone-popup-overlay').classList.add('open');
+}
+
+function closeZonePopup(e, force) {
+  if (force || (e && e.target === document.getElementById('zone-popup-overlay'))) {
+    document.getElementById('zone-popup-overlay').classList.remove('open');
+  }
+}
+
+// ── DIAGNOSIS MODAL (kept for potential future use) ────────
+function closeDiagnosisModal(){document.getElementById('diagnosisModal').style.display='none';}
+window.addEventListener('click',function(e){const m=document.getElementById('diagnosisModal');if(e.target===m)m.style.display='none';});
+</script>
+
+{% endblock %}

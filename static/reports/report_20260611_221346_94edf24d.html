@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>AcneVision Medical Report — AV-20260611-221346</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #faf7f2;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+    @media print {
+      body { background: white; }
+      .no-print { display: none !important; }
+      .page { box-shadow: none !important; margin: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Print button -->
+<div class="no-print" style="
+  position:fixed; top:18px; right:18px; z-index:100;
+  display:flex; gap:8px;">
+  <button onclick="window.print()" style="
+    padding:10px 20px; background:#1e2d3d; color:white;
+    border:none; border-radius:8px; font-size:0.88em;
+    font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
+    🖨 Print / Save PDF
+  </button>
+  <button onclick="window.close()" style="
+    padding:10px 20px; background:#f5f0e8; color:#5a5a5a;
+    border:1px solid #ddd5c4; border-radius:8px; font-size:0.88em;
+    font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif;">
+    ← Close
+  </button>
+</div>
+
+<div class="page" style="
+  max-width: 860px; margin: 0 auto;
+  padding: 48px 48px 60px;
+  background: white;
+  min-height: 100vh;
+  box-shadow: 0 0 40px rgba(0,0,0,0.08);">
+
+  <!-- ══ HEADER ══ -->
+  <div style="display:flex;align-items:flex-start;
+              justify-content:space-between;
+              padding-bottom:24px;
+              border-bottom:2px solid #1e2d3d;
+              margin-bottom:32px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+        <div style="width:40px;height:40px;background:#c1674a;
+                    border-radius:9px;display:flex;align-items:center;
+                    justify-content:center;color:white;font-weight:700;
+                    font-size:0.95em;">AV</div>
+        <div>
+          <div style="font-family:'DM Serif Display',serif;
+                      font-size:1.5em;color:#1e2d3d;">AcneVision</div>
+          <div style="font-size:0.72em;color:#8a8a8a;letter-spacing:1px;
+                      text-transform:uppercase;">AI Skin Analysis System</div>
+        </div>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;
+                  font-size:2em;color:#1e2d3d;margin-top:12px;">
+        Dermatological Analysis Report
+      </div>
+    </div>
+    <div style="text-align:right;font-size:0.8em;color:#8a8a8a;
+                line-height:1.8;">
+      <div><strong style="color:#1a1a1a;">Report ID:</strong> AV-20260611-221346</div>
+      <div><strong style="color:#1a1a1a;">Date:</strong> June 11, 2026 at 10:13 PM</div>
+      <div><strong style="color:#1a1a1a;">Analysis:</strong> AI-Assisted</div>
+      <div style="margin-top:6px;padding:4px 10px;
+                  background:#fef3c7;border:1px solid #fcd34d;
+                  border-radius:6px;color:#92400e;font-size:0.76em;
+                  font-weight:600;">
+        For Educational Use Only
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DIAGNOSIS BANNER ══ -->
+  <div style="background:#fff7ed;border:2px solid #fdba74;
+              border-left:6px solid #ea580c;
+              border-radius:12px;padding:24px 28px;
+              margin-bottom:28px;">
+    <div style="display:flex;align-items:center;
+                justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-size:0.72em;font-weight:700;
+                    color:#ea580c;text-transform:uppercase;
+                    letter-spacing:2px;margin-bottom:6px;">
+          Primary Diagnosis · Grade II–III
+        </div>
+        <div style="font-family:'DM Serif Display',serif;
+                    font-size:2.2em;color:#ea580c;
+                    font-weight:400;">
+          Mild to Moderate
+        </div>
+        <div style="font-size:0.85em;color:#5a5a5a;margin-top:8px;
+                    line-height:1.6;max-width:480px;">
+          Moderate inflammatory acne with multiple papules and pustules across several facial zones. Lesion count: 30–125 total lesions. Some nodular activity may be present.
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:2.8em;font-weight:800;
+                    color:#ea580c;line-height:1;">60.3%</div>
+        <div style="font-size:0.78em;color:#8a8a8a;margin-top:2px;">
+          Model Confidence
+        </div>
+        <div style="margin-top:10px;padding:6px 14px;
+                    background:#ea580c;color:white;
+                    border-radius:8px;font-size:0.78em;
+                    font-weight:700;text-align:center;">
+          Dermatologist consultation advised
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FACE IMAGE + HEALTH SCORE ══ -->
+  <div style="display:flex;gap:24px;margin-bottom:28px;flex-wrap:wrap;">
+
+    
+        <div style="text-align:center;margin-bottom:28px;">
+          <img src="/static/uploads/face_20260611_221346_94edf24d.jpg"
+               alt="Analysed Face"
+               style="max-width:220px;border-radius:12px;
+                      border:2px solid #ddd5c4;
+                      box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+          <div style="font-size:0.78em;color:#8a8a8a;margin-top:8px;">
+            Analysed facial region
+          </div>
+        </div>
+
+    <!-- Health score -->
+    <div style="flex:1;min-width:200px;
+                background:#1e2d3d;border-radius:12px;
+                padding:24px;text-align:center;">
+      <div style="font-family:'DM Serif Display',serif;
+                  color:white;font-size:1em;margin-bottom:16px;">
+        Skin Health Score
+      </div>
+      <div style="font-size:3.5em;font-weight:800;color:white;
+                  line-height:1;">45</div>
+      <div style="font-size:0.82em;color:rgba(255,255,255,0.5);
+                  margin-bottom:14px;">/ 100</div>
+      <div style="background:rgba(255,255,255,0.1);
+                  border-radius:6px;height:8px;overflow:hidden;">
+        <div style="width:45%;height:100%;
+                    background:linear-gradient(90deg,#c1674a,#6b8f71);
+                    border-radius:6px;"></div>
+      </div>
+      <div style="font-size:0.75em;color:rgba(255,255,255,0.5);
+                  margin-top:8px;">
+        Higher score = healthier skin
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SKIN FEATURE ANALYSIS ══ -->
+  <div style="margin-bottom:28px;">
+    <div style="font-family:'DM Serif Display',serif;
+                font-size:1.3em;color:#1e2d3d;
+                margin-bottom:4px;">Skin Feature Analysis</div>
+    <div style="font-size:0.82em;color:#8a8a8a;margin-bottom:16px;">
+      Seven markers measured independently using computer vision analysis
+    </div>
+    <div style="border:1px solid #ddd5c4;border-radius:12px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#1e2d3d;">
+            <th style="padding:11px 16px;text-align:left;
+                       font-size:0.75em;font-weight:700;
+                       color:rgba(255,255,255,0.7);
+                       text-transform:uppercase;letter-spacing:1px;">
+              Feature
+            </th>
+            <th style="padding:11px 16px;text-align:left;
+                       font-size:0.75em;font-weight:700;
+                       color:rgba(255,255,255,0.7);
+                       text-transform:uppercase;letter-spacing:1px;">
+              Level
+            </th>
+            <th style="padding:11px 16px;text-align:left;
+                       font-size:0.75em;font-weight:700;
+                       color:rgba(255,255,255,0.7);
+                       text-transform:uppercase;letter-spacing:1px;">
+              Grade
+            </th>
+            <th style="padding:11px 16px;text-align:left;
+                       font-size:0.75em;font-weight:700;
+                       color:rgba(255,255,255,0.7);
+                       text-transform:uppercase;letter-spacing:1px;">
+              Clinical Note
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#3c3cc8;display:inline-block;flex-shrink:0;"></span>
+        Blackheads
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:30%;height:100%;
+                      background:#2563eb;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#2563eb;background:#2563eb18;
+                     border:1px solid #2563eb40;">
+          Low
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Pore congestion density: 16%. Open comedones detected in oil-prone zones.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#00aaaa;display:inline-block;flex-shrink:0;"></span>
+        Whiteheads
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:12%;height:100%;
+                      background:#059669;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#059669;background:#05966918;
+                     border:1px solid #05966940;">
+          Minimal
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Closed comedone density: 0%. Trapped sebum beneath skin surface.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#c0392b;display:inline-block;flex-shrink:0;"></span>
+        Papules
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:12%;height:100%;
+                      background:#059669;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#059669;background:#05966918;
+                     border:1px solid #05966940;">
+          Minimal
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Inflammatory papule density: 1%. Red raised bumps indicating bacterial activity.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#009940;display:inline-block;flex-shrink:0;"></span>
+        Pustules
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:12%;height:100%;
+                      background:#059669;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#059669;background:#05966918;
+                     border:1px solid #05966940;">
+          Minimal
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Pustule density: 1%. Pus-filled lesions present, indicating active infection.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#e74c3c;display:inline-block;flex-shrink:0;"></span>
+        Redness
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:95%;height:100%;
+                      background:#dc2626;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#dc2626;background:#dc262618;
+                     border:1px solid #dc262640;">
+          Severe
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Inflammation score: 90/100. Erythema and skin irritation detected.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#e67e22;display:inline-block;flex-shrink:0;"></span>
+        Hyperpigmentation
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:12%;height:100%;
+                      background:#059669;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#059669;background:#05966918;
+                     border:1px solid #05966940;">
+          Minimal
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Post-inflammatory marks: 3%. Dark spots from previous lesions.</td>
+    </tr>
+          
+    <tr style="border-bottom:1px solid #f0ebe3;">
+      <td style="padding:12px 16px;font-weight:600;color:#1a1a1a;
+                 display:flex;align-items:center;gap:8px;min-width:180px;">
+        <span style="width:10px;height:10px;border-radius:50%;
+                     background:#8e44ad;display:inline-block;flex-shrink:0;"></span>
+        Skin Texture
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="background:#f0ebe3;border-radius:4px;height:8px;
+                    overflow:hidden;min-width:120px;">
+          <div style="width:95%;height:100%;
+                      background:#dc2626;border-radius:4px;"></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <span style="display:inline-block;padding:3px 10px;
+                     border-radius:12px;font-size:0.78em;font-weight:700;
+                     color:#dc2626;background:#dc262618;
+                     border:1px solid #dc262640;">
+          Severe
+        </span>
+      </td>
+      <td style="padding:12px 16px;font-size:0.85em;color:#5a5a5a;
+                 line-height:1.5;max-width:280px;">Surface roughness score: 100/100. Uneven texture analysis via GLCM.</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ AI PROBABILITY ANALYSIS ══ -->
+  <div style="margin-bottom:28px;">
+    <div style="font-family:'DM Serif Display',serif;
+                font-size:1.3em;color:#1e2d3d;margin-bottom:4px;">
+      AI Classification Probabilities
+    </div>
+    <div style="font-size:0.82em;color:#8a8a8a;margin-bottom:16px;">
+      Confidence distribution across all four severity classes
+    </div>
+    <div style="border:1px solid #ddd5c4;border-radius:12px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+        <tr>
+          <td style="padding:10px 16px;font-size:0.88em;font-weight:600;
+                     color:#1a1a1a;width:160px;">Mild Acne</td>
+          <td style="padding:10px 16px;">
+            <div style="background:#f0ebe3;border-radius:4px;
+                        height:10px;overflow:hidden;min-width:200px;">
+              <div style="width:60.3%;height:100%;
+                          background:#d97706;border-radius:4px;"></div>
+            </div>
+          </td>
+          <td style="padding:10px 16px;font-size:0.88em;
+                     font-weight:700;color:#d97706;width:60px;">60.3%</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 16px;font-size:0.88em;font-weight:600;
+                     color:#1a1a1a;width:160px;">Moderate Acne</td>
+          <td style="padding:10px 16px;">
+            <div style="background:#f0ebe3;border-radius:4px;
+                        height:10px;overflow:hidden;min-width:200px;">
+              <div style="width:32.3%;height:100%;
+                          background:#ea580c;border-radius:4px;"></div>
+            </div>
+          </td>
+          <td style="padding:10px 16px;font-size:0.88em;
+                     font-weight:700;color:#ea580c;width:60px;">32.3%</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 16px;font-size:0.88em;font-weight:600;
+                     color:#1a1a1a;width:160px;">Clear Skin</td>
+          <td style="padding:10px 16px;">
+            <div style="background:#f0ebe3;border-radius:4px;
+                        height:10px;overflow:hidden;min-width:200px;">
+              <div style="width:7.3%;height:100%;
+                          background:#059669;border-radius:4px;"></div>
+            </div>
+          </td>
+          <td style="padding:10px 16px;font-size:0.88em;
+                     font-weight:700;color:#059669;width:60px;">7.3%</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 16px;font-size:0.88em;font-weight:600;
+                     color:#1a1a1a;width:160px;">Severe Acne</td>
+          <td style="padding:10px 16px;">
+            <div style="background:#f0ebe3;border-radius:4px;
+                        height:10px;overflow:hidden;min-width:200px;">
+              <div style="width:0.1%;height:100%;
+                          background:#dc2626;border-radius:4px;"></div>
+            </div>
+          </td>
+          <td style="padding:10px 16px;font-size:0.88em;
+                     font-weight:700;color:#dc2626;width:60px;">0.1%</td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div style="font-size:0.76em;color:#8a8a8a;margin-top:8px;
+                font-style:italic;padding:0 4px;">
+      Note: Combined predictions occur when two adjacent classes are within 30% of each other.
+      This indicates borderline presentation between severity grades.
+    </div>
+  </div>
+
+  <!-- ══ CLINICAL RECOMMENDATIONS ══ -->
+  <div style="margin-bottom:28px;">
+    <div style="font-family:'DM Serif Display',serif;
+                font-size:1.3em;color:#1e2d3d;margin-bottom:4px;">
+      Clinical Recommendations
+    </div>
+    <div style="font-size:0.82em;color:#8a8a8a;margin-bottom:16px;">
+      Evidence-based recommendations for mild to moderate
+    </div>
+    
+        <div style="display:flex;gap:14px;align-items:flex-start;
+                    padding:14px;background:#faf7f2;
+                    border:1px solid #ddd5c4;border-radius:10px;
+                    margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+                      background:#1e2d3d;color:white;font-size:0.75em;
+                      font-weight:700;display:flex;align-items:center;
+                      justify-content:center;flex-shrink:0;">1</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9em;
+                        color:#1e2d3d;margin-bottom:3px;">Medical Consultation</div>
+            <div style="font-size:0.85em;color:#5a5a5a;
+                        line-height:1.6;">Schedule an appointment with a dermatologist for prescription options.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;
+                    padding:14px;background:#faf7f2;
+                    border:1px solid #ddd5c4;border-radius:10px;
+                    margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+                      background:#1e2d3d;color:white;font-size:0.75em;
+                      font-weight:700;display:flex;align-items:center;
+                      justify-content:center;flex-shrink:0;">2</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9em;
+                        color:#1e2d3d;margin-bottom:3px;">Topical Retinoids</div>
+            <div style="font-size:0.85em;color:#5a5a5a;
+                        line-height:1.6;">Adapalene (Differin) is available OTC and reduces pore blockage.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;
+                    padding:14px;background:#faf7f2;
+                    border:1px solid #ddd5c4;border-radius:10px;
+                    margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+                      background:#1e2d3d;color:white;font-size:0.75em;
+                      font-weight:700;display:flex;align-items:center;
+                      justify-content:center;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9em;
+                        color:#1e2d3d;margin-bottom:3px;">Avoid Picking</div>
+            <div style="font-size:0.85em;color:#5a5a5a;
+                        line-height:1.6;">Do not pick or squeeze lesions — significantly increases scarring risk.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;
+                    padding:14px;background:#faf7f2;
+                    border:1px solid #ddd5c4;border-radius:10px;
+                    margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+                      background:#1e2d3d;color:white;font-size:0.75em;
+                      font-weight:700;display:flex;align-items:center;
+                      justify-content:center;flex-shrink:0;">4</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9em;
+                        color:#1e2d3d;margin-bottom:3px;">Oral Antibiotics</div>
+            <div style="font-size:0.85em;color:#5a5a5a;
+                        line-height:1.6;">A dermatologist may prescribe doxycycline or minocycline for 3–6 months.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;
+                    padding:14px;background:#faf7f2;
+                    border:1px solid #ddd5c4;border-radius:10px;
+                    margin-bottom:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+                      background:#1e2d3d;color:white;font-size:0.75em;
+                      font-weight:700;display:flex;align-items:center;
+                      justify-content:center;flex-shrink:0;">5</div>
+          <div>
+            <div style="font-weight:700;font-size:0.9em;
+                        color:#1e2d3d;margin-bottom:3px;">Hormonal Assessment</div>
+            <div style="font-size:0.85em;color:#5a5a5a;
+                        line-height:1.6;">If acne concentrates on jaw/chin, hormonal evaluation may be warranted.</div>
+          </div>
+        </div>
+  </div>
+
+  <!-- ══ METHODOLOGY ══ -->
+  <div style="margin-bottom:28px;background:#f5f0e8;
+              border:1px solid #ddd5c4;border-radius:12px;padding:22px;">
+    <div style="font-family:'DM Serif Display',serif;
+                font-size:1.1em;color:#1e2d3d;margin-bottom:14px;">
+      Analysis Methodology
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;
+                gap:12px;font-size:0.83em;color:#5a5a5a;line-height:1.7;">
+      <div>
+        <strong style="color:#1a1a1a;">Model Architecture:</strong><br>
+        EfficientNetB0 / MobileNetV2 CNN fine-tuned on clinical acne dataset.
+        Transfer learning from ImageNet pre-trained weights.
+      </div>
+      <div>
+        <strong style="color:#1a1a1a;">Feature Detection:</strong><br>
+        Rule-based OpenCV analysis using HSV colour space segmentation,
+        contour detection, and GLCM texture analysis.
+      </div>
+      <div>
+        <strong style="color:#1a1a1a;">Training Data:</strong><br>
+        4-class balanced dataset (clear, mild, moderate, severe).
+        210 images per class. Augmentation applied.
+      </div>
+      <div>
+        <strong style="color:#1a1a1a;">Explainability:</strong><br>
+        Grad-CAM heatmap generated to visualise model attention regions.
+        Combined prediction used when confidence gap &lt; 30%.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DISCLAIMER ══ -->
+  <div style="background:#fef3c7;border:1px solid #fcd34d;
+              border-left:4px solid #f59e0b;
+              border-radius:8px;padding:16px 20px;
+              margin-bottom:28px;">
+    <div style="font-weight:700;color:#92400e;font-size:0.88em;
+                margin-bottom:6px;">
+      ⚠️ Medical Disclaimer
+    </div>
+    <div style="font-size:0.82em;color:#92400e;line-height:1.65;">
+      This report is generated by an AI system for <strong>educational and research purposes only</strong>.
+      It does not constitute a medical diagnosis, prescription, or professional medical advice.
+      The accuracy of AI-based skin analysis is inherently limited by image quality, lighting,
+      dataset bias, and model limitations. Always consult a qualified, board-certified dermatologist
+      for proper diagnosis and treatment. Do not delay seeking professional medical advice based on
+      this report.
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div style="border-top:1px solid #ddd5c4;padding-top:20px;
+              display:flex;justify-content:space-between;
+              align-items:center;flex-wrap:wrap;gap:10px;">
+    <div>
+      <div style="font-family:'DM Serif Display',serif;
+                  font-size:1.1em;color:#1e2d3d;">AcneVision</div>
+      <div style="font-size:0.75em;color:#8a8a8a;">
+        AI-Powered Skin Analysis · Final Year Research Project · 2026
+      </div>
+    </div>
+    <div style="text-align:right;font-size:0.75em;color:#8a8a8a;">
+      <div>Report ID: AV-20260611-221346</div>
+      <div>Generated: June 11, 2026 at 10:13 PM</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

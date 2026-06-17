@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcneVision - Skin Analysis Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .report-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .report-header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .report-header .timestamp { opacity: 0.9; font-size: 0.95em; }
+        
+        .severity-section {
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+        .severity-badge {
+            display: inline-block;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            background: #2ecc71;
+            box-shadow: 0 10px 30px #2ecc7140;
+            margin: 20px 0;
+        }
+        .confidence-text { 
+            font-size: 1.2em; 
+            color: #666; 
+            margin-top: 15px;
+        }
+        
+        .probabilities-section {
+            padding: 30px 40px;
+            background: white;
+        }
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .prob-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+        .prob-item:hover { background: #f0f0f0; }
+        .prob-item.predicted { background: #e3f2fd; border: 2px solid #2196f3; }
+        .prob-label { width: 150px; font-weight: 600; color: #555; }
+        .prob-bar-container {
+            flex: 1;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+        .prob-bar {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 1s ease;
+        }
+        .prob-percentage { width: 60px; font-weight: bold; color: #333; }
+        
+        .features-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .feature-icon { font-size: 1.5em; margin-right: 12px; }
+        .feature-name { flex: 1; font-weight: 600; color: #333; font-size: 1.1em; }
+        .feature-value { 
+            font-weight: bold; 
+            font-size: 1.1em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #f0f0f0;
+        }
+        .feature-detail { color: #666; font-size: 0.95em; margin-left: 36px; }
+        
+        .heatmap-section {
+            padding: 30px 40px;
+            text-align: center;
+            background: white;
+        }
+        .heatmap-img {
+            max-width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .heatmap-caption {
+            margin-top: 15px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .recommendations-section {
+            padding: 30px 40px;
+            background: #f8f9fa;
+        }
+        .rec-list {
+            list-style: none;
+            padding: 0;
+        }
+        .rec-list li {
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #2ecc71;
+            font-size: 1.05em;
+            color: #444;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .rec-list li::before {
+            content: "✓ ";
+            color: #2ecc71;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .health-score-section {
+            padding: 30px 40px;
+            text-align: center;
+            background: white;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            background: conic-gradient(
+                #2ecc71 0% 40%, 
+                #e0e0e0 40% 100%
+            );
+            position: relative;
+        }
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+        }
+        .score-text {
+            position: relative;
+            z-index: 1;
+            color: #333;
+        }
+        .score-label { color: #666; margin-top: 10px; }
+        
+        .disclaimer {
+            padding: 25px 40px;
+            background: #fff3cd;
+            border-top: 3px solid #ffc107;
+            color: #856404;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #333;
+            color: white;
+            font-size: 0.85em;
+        }
+        
+        @media print {
+            body { background: white; }
+            .report-container { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- Header -->
+        <div class="report-header">
+            <h1>🔬 AcneVision Report</h1>
+            <p>AI-Powered Skin Analysis</p>
+            <p class="timestamp">May 13, 2026 at 11:57 AM</p>
+        </div>
+        
+        <!-- Severity Result -->
+        <div class="severity-section">
+            <h2 class="section-title">Diagnosis Result</h2>
+            <div class="severity-badge">Clear Skin</div>
+            <p class="confidence-text">
+                AI Confidence: <strong>79.0%</strong>
+            </p>
+        </div>
+        
+        <!-- Probability Distribution -->
+        <div class="probabilities-section">
+            <h2 class="section-title">📊 Class Probability Distribution</h2>
+            
+        <div class="prob-item predicted">
+            <div class="prob-label">Clear Skin</div>
+            <div class="prob-bar-container">
+                <div class="prob-bar" style="width: 79.03095483779907%; background: #2ecc71;"></div>
+            </div>
+            <div class="prob-percentage">79.0%</div>
+        </div>
+        
+        <div class="prob-item ">
+            <div class="prob-label">Mild Acne</div>
+            <div class="prob-bar-container">
+                <div class="prob-bar" style="width: 7.665057480335236%; background: #f39c12;"></div>
+            </div>
+            <div class="prob-percentage">7.7%</div>
+        </div>
+        
+        <div class="prob-item ">
+            <div class="prob-label">Moderate Acne</div>
+            <div class="prob-bar-container">
+                <div class="prob-bar" style="width: 7.2952114045619965%; background: #e67e22;"></div>
+            </div>
+            <div class="prob-percentage">7.3%</div>
+        </div>
+        
+        <div class="prob-item ">
+            <div class="prob-label">Severe Acne</div>
+            <div class="prob-bar-container">
+                <div class="prob-bar" style="width: 6.0087766498327255%; background: #e74c3c;"></div>
+            </div>
+            <div class="prob-percentage">6.0%</div>
+        </div>
+        
+        </div>
+        
+        <!-- Health Score -->
+        <div class="health-score-section">
+            <h2 class="section-title">💯 Skin Health Score</h2>
+            <div class="score-circle">
+                <span class="score-text">40</span>
+            </div>
+            <p class="score-label">Overall Skin Condition (Higher is Better)</p>
+        </div>
+        
+        <!-- Heatmap -->
+        <div class="heatmap-section">
+            <h2 class="section-title">🎯 AI Attention Visualization</h2>
+            <p style="color: #999;">Heatmap not available for this analysis</p>
+            <p class="heatmap-caption">
+                Red/Yellow regions indicate areas the AI focused on for diagnosis
+            </p>
+        </div>
+        
+        <!-- Skin Features -->
+        <div class="features-section">
+            <h2 class="section-title">🔍 Detailed Skin Feature Analysis</h2>
+            
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">🔴</span>
+                <span class="feature-name">Blackheads</span>
+                <span class="feature-value" style="color: #2ecc71;">Moderate</span>
+            </div>
+            <div class="feature-detail">Count: 83 | Density: 15.0%</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">⚪</span>
+                <span class="feature-name">Whiteheads</span>
+                <span class="feature-value" style="color: #2ecc71;">Low</span>
+            </div>
+            <div class="feature-detail">Count: 49 | Density: 8.9%</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">💢</span>
+                <span class="feature-name">Pustules</span>
+                <span class="feature-value" style="color: #2ecc71;">Low</span>
+            </div>
+            <div class="feature-detail">Count: 31 | Density: 2.8%</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">🔴</span>
+                <span class="feature-name">Papules</span>
+                <span class="feature-value" style="color: #2ecc71;">Low</span>
+            </div>
+            <div class="feature-detail">Count: 19 | Density: 1.7%</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #e74c3c;">
+            <div class="feature-header">
+                <span class="feature-icon">🔥</span>
+                <span class="feature-name">Redness / Inflammation</span>
+                <span class="feature-value" style="color: #e74c3c;">Severe</span>
+            </div>
+            <div class="feature-detail">77.71% of face area</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">⚫</span>
+                <span class="feature-name">Hyperpigmentation</span>
+                <span class="feature-value" style="color: #2ecc71;">Moderate</span>
+            </div>
+            <div class="feature-detail">Count: 83 | Density: 12.0%</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #e74c3c;">
+            <div class="feature-header">
+                <span class="feature-icon">📊</span>
+                <span class="feature-name">Texture Roughness</span>
+                <span class="feature-value" style="color: #e74c3c;">Rough</span>
+            </div>
+            <div class="feature-detail">Roughness Score: 100/100</div>
+        </div>
+        
+        <div class="feature-card" style="border-left: 4px solid #2ecc71;">
+            <div class="feature-header">
+                <span class="feature-icon">👁️</span>
+                <span class="feature-name">Pore Visibility</span>
+                <span class="feature-value" style="color: #2ecc71;">Low</span>
+            </div>
+            <div class="feature-detail">Edge Density: 3.0%</div>
+        </div>
+        
+        </div>
+        
+        <!-- Recommendations -->
+        <div class="recommendations-section">
+            <h2 class="section-title">💡 Personalized Skincare Recommendations</h2>
+            <ul class="rec-list">
+                <li>Maintain your current skincare routine</li><li>Use gentle cleanser twice daily</li><li>Apply SPF 30+ sunscreen daily</li><li>Stay hydrated and maintain balanced diet</li>
+            </ul>
+        </div>
+        
+        <!-- Disclaimer -->
+        
+    <div class="disclaimer">
+        <strong>⚠️ Medical Disclaimer:</strong> This AI analysis is for educational and informational purposes only. 
+        It does not constitute medical advice, diagnosis, or treatment. Always consult a qualified dermatologist 
+        or healthcare provider for professional medical guidance, especially for severe or persistent skin conditions.
+    </div>
+    
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Generated by AcneVision AI System | For Educational Purposes Only</p>
+            <p>Not a substitute for professional medical advice</p>
+        </div>
+    </div>
+</body>
+</html>

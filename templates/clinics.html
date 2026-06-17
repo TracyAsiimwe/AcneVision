@@ -1,0 +1,246 @@
+﻿{% extends "base.html" %}
+{% block title %}AcneVision - Find a Dermatologist{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+      --bg:#0a0a0f; --bg-2:#111118; --bg-3:#1a1a24;
+      --card:#13131a; --border:rgba(255,255,255,0.08);
+      --border-2:rgba(255,255,255,0.14);
+      --text:#e8e8ec; --text-2:#9a9aa8; --text-3:#6a6a78;
+      --rose:#c87a6b; --rose-d:#a85e50;
+      --gold:#c9a96e; --white:#ffffff; --green:#4caf7d;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    nav{background:rgba(10,10,15,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .nav-brand{display:flex;align-items:center;gap:12px;}
+    .nav-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--rose),var(--gold));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.9em;}
+    .nav-name{font-family:'DM Serif Display',serif;font-size:1.3em;color:var(--white);letter-spacing:-0.5px;}
+    .nav-links{display:flex;gap:10px;}
+    .nav-link{padding:7px 16px;border-radius:8px;font-size:0.82em;font-weight:600;text-decoration:none;transition:all 0.2s;border:1.5px solid var(--border);color:var(--text-2);background:transparent;}
+    .nav-link:hover{border-color:var(--rose);color:var(--rose);}
+    .wrap{max-width:1100px;margin:0 auto;padding:40px 32px 60px;}
+    .page-eyebrow{font-size:0.72em;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:3px;margin-bottom:8px;}
+    .page-title{font-family:'DM Serif Display',serif;font-size:2.4em;color:var(--white);margin-bottom:8px;letter-spacing:-1px;}
+    .page-sub{font-size:0.92em;color:var(--text-3);line-height:1.6;margin-bottom:32px;max-width:600px;}
+    .controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+    .search-box{flex:1;min-width:220px;padding:13px 18px;background:var(--bg-2);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-size:0.9em;font-family:'DM Sans',sans-serif;outline:none;transition:all 0.25s;}
+    .search-box::placeholder{color:var(--text-3);}
+    .search-box:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(200,122,107,0.1);}
+    .btn-locate{display:flex;align-items:center;gap:8px;padding:13px 22px;background:linear-gradient(135deg,var(--rose),var(--rose-d));color:white;border:none;border-radius:12px;font-size:0.88em;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.25s;box-shadow:0 4px 16px rgba(200,122,107,0.25);white-space:nowrap;}
+    .btn-locate:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,122,107,0.35);}
+    .filter-tags{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+    .tag{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg-2);color:var(--text-2);font-size:0.8em;font-weight:600;text-decoration:none;transition:all 0.2s;cursor:pointer;user-select:none;}
+    .tag:hover{border-color:var(--rose);color:var(--rose);}
+    .tag.active{background:linear-gradient(135deg,var(--rose),var(--rose-d));color:white;border-color:transparent;box-shadow:0 2px 12px rgba(200,122,107,0.3);}
+    .results-meta{display:flex;align-items:center;gap:8px;font-size:0.85em;color:var(--text-3);margin-bottom:20px;}
+    .pulse-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+    .clinic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+    .clinic-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:all 0.25s;display:flex;flex-direction:column;}
+    .clinic-card:hover{border-color:var(--border-2);box-shadow:0 8px 24px rgba(0,0,0,0.3);transform:translateY(-3px);}
+    .clinic-card.nearest{border-color:var(--gold);box-shadow:0 6px 20px rgba(201,169,110,0.18);}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+    .clinic-name{font-weight:700;font-size:0.97em;color:var(--white);line-height:1.3;}
+    .nearest-badge{font-size:0.68em;font-weight:700;color:var(--gold);background:rgba(201,169,110,0.12);border:1px solid rgba(201,169,110,0.25);padding:3px 9px;border-radius:6px;white-space:nowrap;margin-left:8px;flex-shrink:0;}
+    .clinic-type-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;margin-top:6px;}
+    .type-badge{font-size:0.72em;font-weight:700;padding:3px 10px;border-radius:6px;}
+    .type-clinic{color:var(--rose);background:rgba(200,122,107,0.1);border:1px solid rgba(200,122,107,0.2);}
+    .type-hospital{color:#5b8fd4;background:rgba(91,143,212,0.1);border:1px solid rgba(91,143,212,0.2);}
+    .rating-row{display:flex;align-items:center;gap:6px;font-size:0.8em;}
+    .stars{color:var(--gold);}
+    .review-count{color:var(--text-3);}
+    .divider{height:1px;background:var(--border);margin:12px 0;}
+    .detail-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px;font-size:0.83em;color:var(--text-2);line-height:1.5;}
+    .detail-icon{flex-shrink:0;width:16px;text-align:center;margin-top:1px;}
+    .distance-pill{display:inline-flex;align-items:center;gap:5px;font-size:0.75em;font-weight:600;padding:4px 10px;border-radius:8px;margin-top:8px;}
+    .dist-near{color:#4caf7d;background:rgba(76,175,125,0.1);border:1px solid rgba(76,175,125,0.2);}
+    .dist-mid{color:#f0a500;background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.2);}
+    .dist-far{color:#e74c3c;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.2);}
+    .dist-unknown{color:var(--text-3);background:var(--bg-2);border:1px solid var(--border);}
+    .card-actions{display:flex;gap:8px;margin-top:14px;}
+    .btn-directions{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 16px;background:linear-gradient(135deg,var(--rose),var(--rose-d));color:white;border:none;border-radius:10px;font-size:0.84em;font-weight:700;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all 0.25s;box-shadow:0 3px 12px rgba(200,122,107,0.2);}
+    .btn-directions:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,122,107,0.35);}
+    .btn-call{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 14px;background:transparent;color:var(--text-2);border:1.5px solid var(--border);border-radius:10px;font-size:0.84em;font-weight:600;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif;transition:all 0.25s;}
+    .btn-call:hover{border-color:var(--rose);color:var(--rose);}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--text-3);grid-column:1/-1;}
+    .empty-state a{color:var(--rose);text-decoration:none;font-weight:600;}
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 22px;font-size:0.86em;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,0.35);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);z-index:999;white-space:nowrap;}
+    #toast.show{transform:translateX(-50%) translateY(0);}
+    footer{text-align:center;padding:28px;font-size:0.78em;color:var(--text-3);border-top:1px solid var(--border);margin-top:16px;}
+    .btn-whatsapp{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:6px;
+        padding:11px 14px;
+        background:#25D366;
+        color:white;
+        border:none;
+        border-radius:10px;
+        text-decoration:none;
+        font-size:0.84em;
+        font-weight:700;
+    }
+    @media(max-width:600px){
+      .wrap{padding:28px 18px 48px;}
+      .clinic-grid{grid-template-columns:1fr;}
+      .controls{flex-direction:column;}
+      .btn-locate{width:100%;justify-content:center;}
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="wrap">
+  <div class="page-eyebrow">Healthcare · Kampala, Uganda</div>
+  <h1 class="page-title">Find a Dermatologist</h1>
+  <p class="page-sub">Locate skin clinics and specialists near you. Click <strong style="color:var(--white);">Get Directions</strong> on any clinic to open Google Maps with turn-by-turn navigation from your location.</p>
+
+  <div class="controls">
+    <input type="text" id="searchInput" class="search-box" placeholder="Search by clinic name or area..." oninput="render()">
+    <button class="btn-locate" onclick="findNearest()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      Find Nearest Clinic
+    </button>
+  </div>
+
+  <div class="filter-tags">
+    <span class="tag active" onclick="setFilter('All',this)">All Clinics</span>
+    <span class="tag" onclick="setFilter('Dermatology Clinic',this)">Skin Clinics Only</span>
+    <span class="tag" onclick="setFilter('Hospital',this)">Hospitals Only</span>
+  </div>
+
+  <div class="results-meta">
+    <span class="pulse-dot"></span>
+    <span id="resultsMeta">Showing 12 clinics in Kampala</span>
+  </div>
+
+  <div class="clinic-grid" id="clinicGrid"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const CLINICS = [
+  { name:"Derma Skin Clinic Uganda", type:"Dermatology Clinic", address:"Block C, F1-12, Ntinda Complex, Plot 31 Ntinda - Kisaasi Rd, Kampala", mapsQuery:"Derma Skin Clinic Uganda Kampala", phone:"+256782932937", phoneDisplay:"+256 782 932937", whatsapp:"256782932937", hours:"9:00 AM – 6:00 PM (Mon–Sat), Closed Sunday", rating:3.8, reviews:26, lat:0.3541, lng:32.6109 },
+  { name:"Unity Skin Clinic", type:"Dermatology Clinic", address:"3rd Floor, Acacia Mall, Cooper Rd, Kisementi, Kololo, Kampala", mapsQuery:"Unity Skin Clinic Kampala", phone:"+256786222457", phoneDisplay:"+256 786 222457", whatsapp:"256786222457", hours:"8:00 AM – 4:00 PM Daily", rating:3.8, reviews:192, lat:0.3366, lng:32.5877 },
+  { name:"Glazer Skin Clinic", type:"Dermatology Clinic", address:"1st Floor, Lightning City Building, Kira Road, Bukoto, Kampala", mapsQuery:"Glazer Skin Clinic Kampala", phone:"+256760493634", phoneDisplay:"+256 760 493634", whatsapp:"256760493634", hours:"8:00 AM – 8:00 PM (Mon–Fri), 8:00 AM – 7:00 PM (Sat), 9:00 AM – 5:00 PM (Sun)", rating:4.7, reviews:215, lat:0.3421, lng:32.5950 },
+  { name:"Advanced Skin Clinic Uganda", type:"Dermatology Clinic", address:"Susie House, Plot 1001 Ggaba Road, Nsambya, Kampala", mapsQuery:"Advanced Skin Clinic Uganda Kampala", phone:"+256755562430", phoneDisplay:"+256 755 562430", whatsapp:"256755562430", hours:"8:30 AM – 8:00 PM (Mon–Sat), 10:00 AM – 5:00 PM (Sun)", rating:3.9, reviews:47, lat:0.2975, lng:32.6030 },
+  { name:"Kampala Dermatology Clinic", type:"Dermatology Clinic", address:"Plot 37, Bandali Rise, Bugolobi, Kampala", mapsQuery:"Kampala Dermatology Clinic Kampala", phone:"+256780907156", phoneDisplay:"+256 780 907156", whatsapp:"256780907156", hours:"8:30 AM – 6:00 PM (Mon–Fri), 8:30 AM – 4:00 PM (Sat)", rating:4.5, reviews:20, lat:0.3184, lng:32.6133 },
+  { name:"Elite Dermatology Ug", type:"Dermatology Clinic", address:"1st Floor Room M05, Mirembe Complex, Kireka, Kampala", mapsQuery:"Elite Dermatology Uganda Kampala", phone:"+256783676545", phoneDisplay:"+256 783 676545", whatsapp:"256783676545", hours:"8:00 AM – 6:30 PM (Mon–Sat), Closed Sunday", rating:4.7, reviews:57, lat:0.3475, lng:32.6480 },
+  { name:"Case Hospital Dermatology", type:"Hospital", address:"Plot 4-8, Buganda Road, Kampala", mapsQuery:"Case Hospital Kampala", phone:"+256414340021", phoneDisplay:"+256 414 340021", whatsapp:"256414340021", hours:"Open 24 Hours", rating:4.4, reviews:140, lat:0.3244, lng:32.5750 },
+  { name:"Nakasero Hospital Skin Clinic", type:"Hospital", address:"Plot 14, Akii Bua Road, Nakasero, Kampala", mapsQuery:"Nakasero Hospital Kampala", phone:"+256414346150", phoneDisplay:"+256 414 346150", whatsapp:"256414346150", hours:"Open 24 Hours", rating:3.7, reviews:202, lat:0.3269, lng:32.5794 },
+  { name:"C-Care IHK", type:"Hospital", address:"Plot 4686, Barnabas Road, Namuwongo, Kampala", mapsQuery:"C-Care IHK Kampala", phone:"+256312263300", phoneDisplay:"+256 312 263300", whatsapp:"256312263300", hours:"Open 24 Hours", rating:3.8, reviews:747, lat:0.3053, lng:32.6111 },
+  { name:"Mulago National Referral Hospital – Dermatology", type:"Hospital", address:"Mulago Hill Road, Kampala", mapsQuery:"Mulago National Referral Hospital Kampala", phone:"+256414554000", phoneDisplay:"+256 414 554000", whatsapp:"256414554000", hours:"Dermatology OPD on Scheduled Clinic Days", rating:4.1, reviews:320, lat:0.3378, lng:32.5756 },
+  { name:"UMC Victoria Hospital", type:"Hospital", address:"Plot 1495, Kira Road, Bukoto, Kampala", mapsQuery:"UMC Victoria Hospital Kampala", phone:"+256312222555", phoneDisplay:"+256 312 222555", whatsapp:"256312222555", hours:"Open 24 Hours", rating:3.6, reviews:191, lat:0.3497, lng:32.6042 },
+  { name:"Rubaga Hospital Skin Clinic", type:"Hospital", address:"Rubaga Road, Kampala", mapsQuery:"Rubaga Hospital Kampala", phone:"+256414270222", phoneDisplay:"+256 414 270222", whatsapp:"256414270222", hours:"Open 24 Hours", rating:4.0, reviews:115, lat:0.3042, lng:32.5528 }
+];
+
+let activeFilter='All', userLat=null, userLng=null;
+
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function stars(r){let s='';for(let i=1;i<=5;i++)s+=i<=Math.round(r)?'★':'☆';return s;}
+
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  return CLINICS
+    .filter(c=>(activeFilter==='All'||c.type===activeFilter)&&(!q||c.name.toLowerCase().includes(q)||c.address.toLowerCase().includes(q)))
+    .map(c=>({...c,dist:userLat!==null?haversine(userLat,userLng,c.lat,c.lng):null}))
+    .sort((a,b)=>userLat!==null?(a.dist||999)-(b.dist||999):0);
+}
+
+function distPill(dist,isNearest){
+  if(dist===null)return`<span class="distance-pill dist-unknown">📍 Enable location to see distance</span>`;
+  const km=dist.toFixed(1),cls=dist<3?'dist-near':dist<7?'dist-mid':'dist-far';
+  return`<span class="distance-pill ${cls}">${isNearest?`⭐ ${km} km — Nearest to you`:`📍 ${km} km away`}</span>`;
+}
+
+function dirUrl(c){
+    if(c.mapsQuery){
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.mapsQuery)}`;
+    }
+
+    return `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lng}&travelmode=driving`;
+}
+
+function render(){
+  const list=getFiltered();
+  document.getElementById('resultsMeta').textContent=`Showing ${list.length} clinic${list.length!==1?'s':''} in Kampala${userLat?', sorted by distance':''}`;
+  const grid=document.getElementById('clinicGrid');
+  if(!list.length){grid.innerHTML=`<div class="empty-state"><p>No clinics found.</p><a href="#" onclick="document.getElementById('searchInput').value='';setFilter('All',document.querySelector('.tag'));return false;">Clear search</a></div>`;return;}
+  grid.innerHTML=list.map((c,i)=>{
+    const isNearest=userLat!==null&&i===0;
+    const typeCls=c.type==='Dermatology Clinic'?'type-clinic':'type-hospital';
+    return`<div class="clinic-card${isNearest?' nearest':''}">
+      <div class="card-header">
+        <div class="clinic-name">${c.name}</div>
+        ${isNearest?'<span class="nearest-badge">⭐ Nearest</span>':''}
+      </div>
+      <div class="clinic-type-row">
+        <span class="type-badge ${typeCls}">${c.type}</span>
+        <div class="rating-row"><span class="stars">${stars(c.rating)} ${c.rating}</span><span class="review-count">(${c.reviews})</span></div>
+      </div>
+      <div class="divider"></div>
+      <div class="detail-row"><span class="detail-icon">📍</span><span>${c.address}</span></div>
+      <div class="detail-row"><span class="detail-icon">🕒</span><span>${c.hours}</span></div>
+      <div class="detail-row"><span class="detail-icon">📞</span><span>${c.phoneDisplay}</span></div>
+      ${distPill(c.dist,isNearest)}
+      <div class="card-actions">
+        <a href="${dirUrl(c)}"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="btn-directions">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Get Directions
+        </a>
+        <a href="https://wa.me/${c.whatsapp}?text=Hello%20I%20would%20like%20to%20book%20a%20dermatology%20appointment"
+           target="_blank"
+           class="btn-whatsapp">
+           WhatsApp
+        </a>
+        <a href="tel:${c.phone}" class="btn-call">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.16 6.16l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          Call
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setFilter(f,el){activeFilter=f;document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+function findNearest(){
+  if(!navigator.geolocation){alert('Geolocation not supported.');return;}
+  showToast('📍 Locating you...');
+  navigator.geolocation.getCurrentPosition(
+    pos=>{userLat=pos.coords.latitude;userLng=pos.coords.longitude;render();showToast('✅ Sorted by distance from your location');},
+    ()=>{showToast('❌ Location denied. Please allow access in your browser.');}
+  );
+}
+
+window.onload = function() {
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+            render();
+            showToast('📍 Location detected successfully');
+        },
+        function() {
+            render();
+            showToast('Location permission denied');
+        }
+    );
+};
+</script>
+{% endblock %}

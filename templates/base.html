@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}AcneVision{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+  <!-- Apply theme before render to prevent flash -->
+  <script>
+    (function(){
+      const t = localStorage.getItem('av-theme') || 'dark';
+      document.body && document.body.classList.add('theme-' + t);
+    })();
+  </script>
+  <script defer src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% block navbar %}
+<nav>
+  <div class="nav-in">
+    <div class="nav-brand">
+      <div class="nav-mark">AV</div>
+      <span class="nav-name">AcneVision</span>
+    </div>
+
+    <div class="nav-links">
+      {% if current_user.is_authenticated %}
+        <span class="nav-tag nav-tag-user">{{ current_user.username }}</span>
+        <a href="{{ url_for('index') }}"   class="nav-tag">New Analysis</a>
+        <a href="{{ url_for('history') }}" class="nav-tag">History</a>
+        <a href="{{ url_for('learn') }}"   class="nav-tag">Learn</a>
+        <a href="{{ url_for('clinics') }}" class="nav-tag">Find Clinics</a>
+        <a href="{{ url_for('logout') }}"  class="nav-tag">Sign Out</a>
+      {% else %}
+        <a href="{{ url_for('login') }}"    class="nav-tag">Sign In</a>
+        <a href="{{ url_for('register') }}" class="nav-tag">Register</a>
+      {% endif %}
+    </div>
+
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}{% endblock %}
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

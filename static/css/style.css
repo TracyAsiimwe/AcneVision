@@ -1,0 +1,204 @@
+/* ============================================
+   AcneVision - Main Stylesheet (index page)
+   ============================================ */
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container { max-width:1200px; margin:0 auto; padding:20px; }
+
+/* ── Header ── */
+.main-header {
+    text-align: center;
+    padding: 40px 20px;
+    color: white;
+    position: relative;
+}
+.logo {
+    display: flex; align-items: center;
+    justify-content: center; gap: 15px;
+    margin-bottom: 10px;
+}
+.logo-icon { font-size: 3em; }
+.logo h1   { font-size: 2.8em; font-weight:700; letter-spacing:-1px; }
+.tagline   { font-size: 1.2em; opacity:0.9; font-weight:300; }
+
+.btn-back {
+    position: absolute; top: 30px; left: 30px;
+    background: rgba(255,255,255,0.2);
+    color: white; padding: 10px 20px;
+    border-radius: 25px; text-decoration: none;
+    backdrop-filter: blur(10px); transition: all 0.3s;
+}
+.btn-back:hover { background:rgba(255,255,255,0.3); transform:translateX(-3px); }
+
+/* ── Buttons ── */
+.btn {
+    display: inline-block; padding: 14px 32px;
+    border-radius: 30px; border: none;
+    font-size: 1em; font-weight:600;
+    cursor: pointer; transition: all 0.3s;
+    text-align: center; text-decoration: none;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+}
+.btn-secondary {
+    background: white; color: #667eea;
+    border: 2px solid #667eea;
+}
+.btn-secondary:hover { background:#667eea; color:white; }
+
+/* ── Alerts ── */
+.alert {
+    padding: 16px 20px; border-radius: 12px;
+    margin: 16px 0; font-size: 0.95em;
+}
+.alert-error   { background:#fee; border-left:4px solid #e74c3c; color:#c0392b; }
+.alert-warning { background:#fff3cd; border-left:4px solid #ffc107; color:#856404; }
+
+/* ── Upload section ── */
+.upload-section {
+    background: white; border-radius: 20px;
+    padding: 40px; margin: 30px 0;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+.upload-section h2 {
+    text-align: center; font-size: 1.8em;
+    margin-bottom: 30px; color: #333;
+}
+
+.input-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.method-card {
+    border: 2px dashed #ddd; border-radius: 15px;
+    padding: 30px; text-align: center; transition: all 0.3s;
+}
+.method-card:hover {
+    border-color: #667eea; transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.method-icon   { font-size: 3em; margin-bottom: 15px; }
+.method-card h3{ font-size: 1.3em; margin-bottom:10px; color:#333; }
+.method-card p { color:#666; margin-bottom:20px; }
+
+#file-input    { display: none; }
+.file-name     { margin-top:15px; color:#667eea; font-weight:500; }
+
+/* Drop zone */
+.drop-zone {
+    border: 2px dashed #667eea; border-radius: 12px;
+    padding: 28px; text-align: center; cursor: pointer;
+    transition: all 0.3s; margin-bottom: 16px;
+}
+.drop-zone:hover { background: #f0f0ff; }
+.drop-zone input[type="file"] { display: none; }
+
+/* ── Webcam ── */
+.webcam-container {
+    margin-top: 20px; border-radius: 15px;
+    overflow: hidden; background: #f0f0f0;
+}
+.webcam-container video,
+.webcam-container canvas {
+    width: 100%; max-width: 400px;
+    border-radius: 10px; display: block; margin: 0 auto;
+}
+.webcam-controls {
+    padding: 15px; display: flex;
+    gap: 10px; justify-content: center;
+}
+.cam-notice {
+    background: #ede9fe; border: 1px solid #7c3aed;
+    border-radius: 8px; padding: 10px 14px;
+    margin-bottom: 12px; font-size: 0.9em; color: #5b21b6;
+}
+.cam-notice code {
+    background: #ddd6fe; padding: 2px 6px;
+    border-radius: 4px; color: #4c1d95;
+}
+.hidden { display: none !important; }
+
+/* ── Loading ── */
+.loading-overlay {
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(255,255,255,0.95);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 1000;
+}
+.spinner {
+    width: 60px; height: 60px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+@keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+.loading-sub { color:#999; margin-top:10px; }
+
+/* ── Info / tips ── */
+.info-section, .tips-section {
+    background: white; border-radius: 20px;
+    padding: 40px; margin: 30px 0;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+.info-section h2, .tips-section h2 {
+    font-size: 1.6em; margin-bottom: 25px;
+    color: #333; text-align: center;
+}
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 25px;
+}
+.feature-item {
+    text-align: center; padding: 25px;
+    border-radius: 15px; background: #f8f9fa;
+    transition: transform 0.3s;
+}
+.feature-item:hover { transform:translateY(-5px); background:#e3f2fd; }
+.feature-emoji { font-size:2.5em; display:block; margin-bottom:15px; }
+.feature-item h4 { font-size:1.1em; margin-bottom:10px; color:#333; }
+.feature-item p  { color:#666; font-size:0.95em; }
+
+.tips-list { list-style:none; max-width:600px; margin:0 auto; }
+.tips-list li {
+    padding:15px 20px; margin:10px 0;
+    background:#f8f9fa; border-radius:10px;
+    font-size:1.05em; border-left:4px solid #667eea;
+}
+
+/* ── Footer ── */
+.main-footer {
+    text-align:center; padding:30px;
+    color:white; opacity:0.9;
+}
+.main-footer p { margin:10px 0; }
+.copyright { font-size:0.9em; opacity:0.7; }
+
+/* ── Responsive ── */
+@media(max-width:768px){
+    .input-methods { grid-template-columns:1fr; }
+    .logo h1 { font-size:2em; }
+    .btn-back { position:relative; top:auto; left:auto; display:inline-block; margin-bottom:20px; }
+}

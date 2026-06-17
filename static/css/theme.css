@@ -1,0 +1,459 @@
+/*
+  AcneVision Master Theme
+  Location: static/css/theme.css
+  Every page uses this. Nothing is hardcoded elsewhere.
+*/
+
+/* ══════════════════════════════════
+   DARK THEME (default)
+   ══════════════════════════════════ */
+body.theme-dark {
+  --bg          : #0e0f13;
+  --bg2         : #13141a;
+  --bg3         : #1a1b22;
+  --card        : #1e1f28;
+  --card-border : #2a2b38;
+  --card-hover  : #252633;
+  --text        : #f2f2f7;
+  --text-2      : #9898b0;
+  --text-3      : #55556a;
+  --accent      : #c1674a;
+  --accent-d    : #a8543a;
+  --accent-glow : rgba(193,103,74,0.25);
+  --green       : #2ea879;
+  --nav-bg      : rgba(14,15,19,0.88);
+  --input-bg    : #13141a;
+  --shadow      : rgba(0,0,0,0.5);
+  --tag-bg      : rgba(193,103,74,0.15);
+  --tag-border  : rgba(193,103,74,0.35);
+  --tag-text    : #c1674a;
+}
+
+/* ══════════════════════════════════
+   LIGHT THEME
+   ══════════════════════════════════ */
+body.theme-light {
+  --bg          : #f8f6f2;
+  --bg2         : #f2ede6;
+  --bg3         : #ebe4da;
+  --card        : #ffffff;
+  --card-border : #ddd5c4;
+  --card-hover  : #faf7f2;
+  --text        : #1a1a1a;
+  --text-2      : #5a5a6a;
+  --text-3      : #9a9aaa;
+  --accent      : #c1674a;
+  --accent-d    : #a8543a;
+  --accent-glow : rgba(193,103,74,0.15);
+  --green       : #2ea879;
+  --nav-bg      : rgba(248,246,242,0.92);
+  --input-bg    : #f2ede6;
+  --shadow      : rgba(0,0,0,0.08);
+  --tag-bg      : rgba(193,103,74,0.1);
+  --tag-border  : rgba(193,103,74,0.25);
+  --tag-text    : #c1674a;
+}
+
+/* ══════════════════════════════════
+   RESET + BASE
+   ══════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family      : 'DM Sans', sans-serif;
+  background       : var(--bg);
+  color            : var(--text);
+  min-height       : 100vh;
+  transition       : background .35s, color .35s;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ══════════════════════════════════
+   NAV — shared across all pages
+   ══════════════════════════════════ */
+nav {
+  position      : sticky;
+  top           : 0;
+  z-index       : 200;
+  background    : var(--nav-bg);
+  border-bottom : 1px solid var(--card-border);
+  backdrop-filter: blur(16px);
+  transition    : background .35s, border-color .35s;
+}
+.nav-in {
+  max-width  : 1200px;
+  margin     : 0 auto;
+  padding    : 16px 32px;
+  display    : flex;
+  align-items: center;
+  gap        : 12px;
+}
+.nav-brand {
+  display    : flex;
+  align-items: center;
+  gap        : 10px;
+  margin-right: auto;
+}
+.nav-mark {
+  width          : 36px;
+  height         : 36px;
+  background     : var(--accent);
+  border-radius  : 9px;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  color          : #fff;
+  font-weight    : 700;
+  font-size      : 0.88em;
+  flex-shrink    : 0;
+}
+.nav-name {
+  font-family : 'DM Serif Display', serif;
+  font-size   : 1.2em;
+  color       : var(--text);
+  white-space : nowrap;
+}
+.nav-links {
+  display    : flex;
+  align-items: center;
+  gap        : 8px;
+  flex-wrap  : wrap;
+}
+.nav-tag, .nav-link {
+  padding        : 6px 14px;
+  border-radius  : 20px;
+  font-size      : 0.8em;
+  font-weight    : 600;
+  text-decoration: none;
+  border         : 1px solid var(--card-border);
+  background     : var(--bg3);
+  color          : var(--text-2);
+  transition     : all .2s;
+  white-space    : nowrap;
+  cursor         : pointer;
+  font-family    : 'DM Sans', sans-serif;
+}
+.nav-tag:hover, .nav-link:hover {
+  border-color: var(--accent);
+  color       : var(--accent);
+  background  : var(--tag-bg);
+}
+.nav-tag-user {
+  background  : var(--tag-bg);
+  border-color: var(--tag-border);
+  color       : var(--accent);
+  font-weight : 700;
+}
+
+/* ══════════════════════════════════
+   THEME TOGGLE BUTTON
+   ══════════════════════════════════ */
+.theme-toggle-btn {
+  width          : 36px;
+  height         : 36px;
+  border-radius  : 50%;
+  border         : 1px solid var(--card-border);
+  background     : var(--card);
+  color          : var(--text-2);
+  font-size      : 1em;
+  cursor         : pointer;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  transition     : all .25s;
+  flex-shrink    : 0;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--accent);
+  color       : var(--accent);
+  transform   : scale(1.1);
+}
+
+/* ══════════════════════════════════
+   SHARED LAYOUT UTILITIES
+   ══════════════════════════════════ */
+.page-wrap {
+  max-width: 1200px;
+  margin   : 0 auto;
+  padding  : 48px 32px 80px;
+}
+.page-wrap-sm {
+  max-width: 860px;
+  margin   : 0 auto;
+  padding  : 48px 32px 80px;
+}
+
+/* Section labels */
+.eyebrow {
+  font-size      : 0.72em;
+  font-weight    : 700;
+  letter-spacing : 2px;
+  text-transform : uppercase;
+  color          : var(--accent);
+  margin-bottom  : 8px;
+}
+.page-title {
+  font-family   : 'DM Serif Display', serif;
+  font-size     : 2.4em;
+  color         : var(--text);
+  letter-spacing: -0.5px;
+  margin-bottom : 10px;
+  line-height   : 1.1;
+}
+.page-title em {
+  font-style: italic;
+  color      : var(--accent);
+}
+.page-sub {
+  font-size    : 0.95em;
+  color        : var(--text-2);
+  line-height  : 1.8;
+  margin-bottom: 40px;
+  max-width    : 560px;
+}
+.section-title {
+  font-family   : 'DM Serif Display', serif;
+  font-size     : 1.6em;
+  color         : var(--text);
+  letter-spacing: -0.3px;
+  margin-bottom : 6px;
+}
+.section-sub {
+  font-size    : 0.87em;
+  color        : var(--text-2);
+  margin-bottom: 28px;
+  line-height  : 1.7;
+}
+
+/* ══════════════════════════════════
+   CARDS — universal card style
+   ══════════════════════════════════ */
+.av-card {
+  background   : var(--card);
+  border       : 1px solid var(--card-border);
+  border-radius: 16px;
+  padding      : 28px;
+  transition   : background .35s, border-color .35s;
+}
+.av-card-hover {
+  cursor    : pointer;
+  transition: all .25s;
+}
+.av-card-hover:hover {
+  background  : var(--card-hover);
+  border-color: var(--accent);
+  transform   : translateY(-3px);
+  box-shadow  : 0 8px 30px var(--shadow);
+}
+
+/* ══════════════════════════════════
+   TAGS / BADGES
+   ══════════════════════════════════ */
+.av-tag {
+  display      : inline-block;
+  padding      : 3px 10px;
+  border-radius: 20px;
+  font-size    : 0.72em;
+  font-weight  : 700;
+  background   : var(--tag-bg);
+  border       : 1px solid var(--tag-border);
+  color        : var(--tag-text);
+}
+.av-tag-green {
+  background: rgba(46,168,121,0.12);
+  border-color: rgba(46,168,121,0.3);
+  color: var(--green);
+}
+.av-tag-gray {
+  background  : var(--bg3);
+  border-color: var(--card-border);
+  color       : var(--text-3);
+}
+
+/* ══════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════ */
+.av-btn {
+  display        : inline-flex;
+  align-items    : center;
+  justify-content: center;
+  gap            : 8px;
+  padding        : 12px 24px;
+  border-radius  : 10px;
+  font-size      : 0.9em;
+  font-weight    : 700;
+  font-family    : 'DM Sans', sans-serif;
+  cursor         : pointer;
+  text-decoration: none;
+  transition     : all .22s;
+  border         : none;
+}
+.av-btn-primary {
+  background : var(--accent);
+  color      : #fff;
+  box-shadow : 0 4px 16px var(--accent-glow);
+}
+.av-btn-primary:hover {
+  background: var(--accent-d);
+  transform : translateY(-1px);
+  box-shadow: 0 6px 22px var(--accent-glow);
+}
+.av-btn-ghost {
+  background  : var(--bg3);
+  border      : 1px solid var(--card-border);
+  color       : var(--text-2);
+}
+.av-btn-ghost:hover {
+  border-color: var(--accent);
+  color       : var(--accent);
+}
+.av-btn:disabled {
+  opacity: 0.35;
+  cursor : not-allowed;
+  transform: none !important;
+}
+
+/* ══════════════════════════════════
+   INPUTS
+   ══════════════════════════════════ */
+.av-input {
+  width        : 100%;
+  padding      : 12px 16px;
+  background   : var(--input-bg);
+  border       : 1.5px solid var(--card-border);
+  border-radius: 10px;
+  color        : var(--text);
+  font-size    : 0.9em;
+  font-family  : 'DM Sans', sans-serif;
+  outline      : none;
+  transition   : border-color .2s, background .35s;
+}
+.av-input:focus { border-color: var(--accent); }
+.av-input::placeholder { color: var(--text-3); }
+
+/* ══════════════════════════════════
+   ALERTS
+   ══════════════════════════════════ */
+.av-alert {
+  padding      : 11px 15px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  font-size    : 0.86em;
+  line-height  : 1.5;
+}
+.av-alert-error {
+  background  : rgba(220,38,38,0.12);
+  border      : 1px solid rgba(220,38,38,0.25);
+  color       : #f87171;
+}
+.av-alert-success {
+  background  : rgba(46,168,121,0.12);
+  border      : 1px solid rgba(46,168,121,0.25);
+  color       : var(--green);
+}
+.av-alert-warn {
+  background  : rgba(245,158,11,0.12);
+  border      : 1px solid rgba(245,158,11,0.25);
+  color       : #fbbf24;
+}
+body.theme-light .av-alert-error {
+  background: #fef2f2; border-color:#fecaca; color:#c0392b;
+}
+body.theme-light .av-alert-success {
+  background: #f0fdf4; border-color:#bbf7d0; color:#166534;
+}
+body.theme-light .av-alert-warn {
+  background: #fffbeb; border-color:#fde68a; color:#92400e;
+}
+
+/* ══════════════════════════════════
+   DIVIDERS + SEPARATORS
+   ══════════════════════════════════ */
+.av-divider {
+  display    : flex;
+  align-items: center;
+  gap        : 12px;
+  margin     : 20px 0;
+  color      : var(--text-3);
+  font-size  : 0.76em;
+  font-weight: 600;
+}
+.av-divider::before, .av-divider::after {
+  content   : '';
+  flex      : 1;
+  border-top: 1px solid var(--card-border);
+}
+
+/* ══════════════════════════════════
+   FOOTER
+   ══════════════════════════════════ */
+.av-footer {
+  border-top : 1px solid var(--card-border);
+  padding    : 28px 32px;
+  text-align : center;
+  color      : var(--text-3);
+  font-size  : 0.8em;
+  line-height: 1.7;
+}
+.av-footer-name {
+  font-family  : 'DM Serif Display', serif;
+  font-size    : 1.1em;
+  color        : var(--text);
+  margin-bottom: 6px;
+}
+
+/* ══════════════════════════════════
+   LOADING OVERLAY
+   ══════════════════════════════════ */
+#av-ldr {
+  position       : fixed;
+  inset          : 0;
+  z-index        : 9999;
+  background     : rgba(0,0,0,0.75);
+  backdrop-filter: blur(12px);
+  display        : none;
+  flex-direction : column;
+  align-items    : center;
+  justify-content: center;
+  gap            : 14px;
+}
+#av-ldr.on { display:flex; }
+.ldr-ring {
+  width        : 50px;
+  height       : 50px;
+  border-radius: 50%;
+  border       : 3px solid var(--card-border);
+  border-top-color: var(--accent);
+  animation    : spin .85s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg);} }
+.ldr-text { font-size:.98em; font-weight:700; color:var(--text); }
+.ldr-sub  { font-size:.8em;  color:var(--text-2); }
+
+/* ══════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════ */
+::-webkit-scrollbar { width:5px; background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--card-border); border-radius:3px; }
+
+/* ══════════════════════════════════
+   ANIMATION HELPERS
+   ══════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.fade-up { animation:fadeUp .4s ease forwards; opacity:0; }
+.d1{animation-delay:.05s} .d2{animation-delay:.1s}
+.d3{animation-delay:.15s} .d4{animation-delay:.2s}
+.d5{animation-delay:.25s} .d6{animation-delay:.3s}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════ */
+@media(max-width:768px){
+  .page-wrap, .page-wrap-sm { padding:28px 18px 60px; }
+  .nav-in { padding:14px 18px; }
+  .page-title { font-size:1.8em; }
+}

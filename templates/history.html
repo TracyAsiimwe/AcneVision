@@ -1,0 +1,165 @@
+﻿{% extends "base.html" %}
+{% block title %}AcneVision - My History{% endblock %}
+
+{% block extra_head %}
+<style>
+  .alert {
+    padding: 11px 15px;
+    border-radius: 9px;
+    margin: 12px 0;
+    font-size: 0.86em;
+  }
+  .alert-success {
+    background: rgba(76,175,125,0.08);
+    border: 1px solid rgba(76,175,125,0.2);
+    color: var(--sage, #4caf7d);
+  }
+  .alert-error {
+    background: rgba(231,76,60,0.08);
+    border: 1px solid rgba(231,76,60,0.2);
+    color: #e57373;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+
+  <div class="eyebrow fade-up d1">Your scans</div>
+  <h1 class="page-title fade-up d2">Skin History</h1>
+  <p class="page-sub fade-up d3">
+    Track your skin over time. Each analysis is saved automatically.
+  </p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" style="margin-bottom:20px;">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if analyses %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+                gap:14px;margin-bottom:36px;" class="fade-up d3">
+      <div class="av-card" style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2.4em;
+                    color:var(--text);line-height:1;">{{ analyses|length }}</div>
+        <div style="font-size:0.78em;color:var(--text-3);margin-top:4px;
+                    text-transform:uppercase;letter-spacing:1px;font-weight:600;">
+          Total Scans
+        </div>
+      </div>
+      <div class="av-card" style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:2.4em;
+                    color:var(--accent);line-height:1;">
+          {{ analyses[0].health_score }}
+        </div>
+        <div style="font-size:0.78em;color:var(--text-3);margin-top:4px;
+                    text-transform:uppercase;letter-spacing:1px;font-weight:600;">
+          Latest Score
+        </div>
+      </div>
+      <div class="av-card" style="text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:1.3em;
+                    color:var(--text);line-height:1.2;padding-top:6px;">
+          {{ analyses[0].severity.replace('_',' ').title() }}
+        </div>
+        <div style="font-size:0.78em;color:var(--text-3);margin-top:4px;
+                    text-transform:uppercase;letter-spacing:1px;font-weight:600;">
+          Latest Result
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      {% for a in analyses %}
+      {% set sev_colors = {
+        'clear_skin':'#059669','mild':'#d97706',
+        'moderate':'#ea580c','severe':'#dc2626'
+      } %}
+      {% set c = sev_colors.get(a.severity, '#8a8a8a') %}
+      <div class="av-card fade-up d{{ loop.index % 4 + 2 }}"
+           style="border-left:4px solid {{ c }};
+                  display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+
+        {% if a.face_image %}
+        <img src="{{ url_for('static', filename='uploads/' ~ a.face_image) }}"
+             alt="Scan"
+             style="width:64px;height:64px;object-fit:cover;
+                    border-radius:10px;border:1px solid var(--card-border);
+                    flex-shrink:0;">
+        {% endif %}
+
+        <div style="flex:1;min-width:160px;">
+          <div style="font-weight:700;font-size:0.95em;
+                      color:var(--text);margin-bottom:4px;">
+            {{ a.severity.replace('_',' ').replace(' acne','').title() }}
+          </div>
+          <div style="font-size:0.8em;color:var(--text-3);">
+            {{ a.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+          </div>
+        </div>
+
+        <div style="text-align:center;min-width:70px;">
+          <div style="font-family:'DM Serif Display',serif;
+                      font-size:1.8em;color:{{ c }};line-height:1;">
+            {{ a.health_score }}
+          </div>
+          <div style="font-size:0.7em;color:var(--text-3);">/ 100</div>
+        </div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;min-width:120px;">
+          {% for feat in [a.blackheads_level, a.redness_level, a.papules_level] %}
+          {% if feat and feat not in ('Minimal','Low') %}
+          <span class="av-tag">{{ feat }}</span>
+          {% endif %}
+          {% endfor %}
+        </div>
+
+        <div style="display:flex;gap:8px;flex-shrink:0;">
+          <a href="{{ url_for('view_analysis', analysis_id=a.id) }}"
+             class="av-btn av-btn-primary"
+             style="padding:8px 14px;font-size:0.8em;">
+            View Results
+          </a>
+          {% if a.report_file %}
+          <a href="{{ url_for('static', filename='reports/' ~ a.report_file) }}"
+             target="_blank" class="av-btn av-btn-ghost"
+             style="padding:8px 14px;font-size:0.8em;">
+            Report
+          </a>
+          {% endif %}
+          <a href="{{ url_for('delete_analysis', analysis_id=a.id) }}"
+             class="av-btn"
+             style="padding:8px 14px;font-size:0.8em;
+                    background:rgba(220,38,38,0.1);
+                    border:1px solid rgba(220,38,38,0.2);
+                    color:#f87171;"
+             onclick="return confirm('Delete this analysis?')">
+            Delete
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="av-card" style="text-align:center;padding:60px 40px;">
+      <div style="font-family:'DM Serif Display',serif;
+                  font-size:1.4em;color:var(--text);margin-bottom:10px;">
+        No analyses yet
+      </div>
+      <div style="font-size:0.87em;color:var(--text-2);margin-bottom:24px;">
+        Upload your first photo to start tracking your skin health.
+      </div>
+      <a href="{{ url_for('index') }}" class="av-btn av-btn-primary">
+        Start First Scan
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

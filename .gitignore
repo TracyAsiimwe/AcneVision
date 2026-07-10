@@ -13,13 +13,6 @@ env/
 # Environment variables
 .env
 
-# Model files (large binaries)
-*.h5
-*.keras
-*.pb
-*.tflite
-model/
-
 # Dataset (large)
 dataset/
 
@@ -33,6 +26,8 @@ logs/
 
 # Uploads / generated files
 static/uploads/
+static/heatmaps/
+static/reports/
 
 # IDE
 .vscode/

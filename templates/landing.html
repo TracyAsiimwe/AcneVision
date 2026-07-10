@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% block title %}AcneVision — AI Skin Analysis{% endblock %}
+
+{% block navbar %}
+<nav>
+  <div class="nav-in">
+    <div class="nav-brand">
+      <div class="nav-mark">AV</div>
+      <span class="nav-name">AcneVision</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a href="{{ url_for('login') }}"    class="nav-tag">Sign In</a>
+      <a href="{{ url_for('register') }}" class="nav-tag">Get Started</a>
+    </div>
+    <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    <button class="nav-burger" id="nav-burger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Base override: same warm dark as login ── */
+  body { background: #0e0b0a !important; color: rgba(255,255,255,0.85) !important; }
+
+  /* Ambient orb background */
+  .land-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 40%, rgba(193,103,74,0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(100,50,30,0.10) 0%, transparent 55%),
+      #0e0b0a;
+  }
+  .land-wrap { position: relative; z-index: 1; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 90px 24px 64px;
+    max-width: 740px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-size: 0.7em;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c1674a;
+    margin-bottom: 22px;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4em, 6vw, 4em);
+    font-weight: 400;
+    color: white;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 22px;
+  }
+  .hero-title em { font-style: italic; color: #c1674a; }
+  .hero-rule {
+    width: 40px; height: 2px;
+    background: #c1674a;
+    border-radius: 2px;
+    margin: 0 auto 22px;
+  }
+  .hero-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.97em;
+    font-weight: 300;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.85;
+    max-width: 500px;
+    margin: 0 auto 38px;
+  }
+  .hero-btns {
+    display: flex; gap: 12px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .btn-primary-land {
+    padding: 14px 34px;
+    border-radius: 10px;
+    background: #c1674a;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.93em;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all .25s;
+    box-shadow: 0 4px 20px rgba(193,103,74,0.3);
+  }
+  .btn-primary-land:hover { background: #a8543a; transform: translateY(-2px); box-shadow: 0 6px 26px rgba(193,103,74,0.4); }
+  .btn-outline-land {
+    padding: 14px 34px;
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(255,255,255,0.5);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.93em;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all .25s;
+  }
+  .btn-outline-land:hover { border-color: #c1674a; color: #c1674a; }
+
+  /* ── FEATURES ── */
+  .features-wrap {
+    max-width: 980px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+  }
+  .section-eyebrow {
+    text-align: center;
+    font-size: 0.7em;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c1674a;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6em, 3vw, 2.2em);
+    font-weight: 400;
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+  }
+  .section-title em { font-style: italic; color: #c1674a; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .feat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 26px 22px;
+    transition: all .25s;
+  }
+  .feat-card:hover {
+    border-color: rgba(193,103,74,0.4);
+    background: rgba(193,103,74,0.05);
+    transform: translateY(-3px);
+  }
+  .feat-icon { font-size: 1.6em; margin-bottom: 12px; }
+  .feat-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.93em;
+    color: white;
+    margin-bottom: 8px;
+  }
+  .feat-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82em;
+    font-weight: 300;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.75;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .steps-wrap {
+    max-width: 820px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .step-num {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: rgba(193,103,74,0.12);
+    border: 1px solid rgba(193,103,74,0.3);
+    color: #c1674a;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1em;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.93em;
+    color: white;
+  }
+  .step-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82em;
+    font-weight: 300;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.75;
+  }
+
+  /* ── BOTTOM CTA ── */
+  .cta-wrap {
+    text-align: center;
+    padding: 60px 24px 80px;
+    max-width: 540px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7em, 3vw, 2.2em);
+    font-weight: 400;
+    color: white;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+  }
+  .cta-title em { font-style: italic; color: #c1674a; }
+  .cta-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88em;
+    font-weight: 300;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 30px;
+    line-height: 1.8;
+  }
+  .lfoot {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.75em;
+    font-family: 'DM Sans', sans-serif;
+    color: rgba(255,255,255,0.18);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  @media(max-width: 768px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .steps-grid    { grid-template-columns: 1fr; }
+    .hero          { padding: 60px 20px 44px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="land-bg"></div>
+<div class="land-wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">AI-Powered Skin Analysis</div>
+  <h1 class="hero-title">Know your skin.<br><em>Understand your acne.</em></h1>
+  <div class="hero-rule"></div>
+  <p class="hero-sub">
+    AcneVision uses deep learning to analyse your skin, detect acne severity,
+    and give you personalised skincare recommendations — in seconds.
+  </p>
+  <div class="hero-btns">
+    <a href="{{ url_for('register') }}" class="btn-primary-land">Get Started Free</a>
+    <a href="{{ url_for('login') }}"    class="btn-outline-land">Sign In</a>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-wrap">
+  <div class="section-eyebrow">What AcneVision does</div>
+  <div class="section-title">Everything you need to<br><em>understand your skin</em></div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🔬</div>
+      <div class="feat-title">AI Severity Detection</div>
+      <div class="feat-text">Our CNN model classifies your acne as clear, mild, moderate, or severe with high accuracy using advanced image analysis.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🗺</div>
+      <div class="feat-title">Facial Zone Mapping</div>
+      <div class="feat-text">Grad-CAM heatmaps highlight exactly which areas of your face the AI is focused on, making the result transparent and explainable.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💊</div>
+      <div class="feat-title">Personalised Recommendations</div>
+      <div class="feat-text">Get skincare and lifestyle recommendations tailored to your specific severity level, including when to see a dermatologist.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">AI Skin Assistant</div>
+      <div class="feat-text">Chat with our AI assistant about your results, skincare routines, ingredients, and any questions about your skin.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">Scan History</div>
+      <div class="feat-text">Track your skin over time with a full history of past analyses, so you can see whether your skin is improving.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🏥</div>
+      <div class="feat-title">Find a Dermatologist</div>
+      <div class="feat-text">Browse verified skin clinics and dermatologists in Kampala with directions, ratings, and contact information.</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="steps-wrap">
+  <div class="section-eyebrow">Simple process</div>
+  <div class="section-title">How it <em>works</em></div>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Upload a photo</div>
+      <div class="step-text">Take or upload a clear photo of your face. You can also use your webcam directly in the app.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">AI analyses your skin</div>
+      <div class="step-text">Our model detects your acne severity, maps affected zones, and identifies lesion types in seconds.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Get your results</div>
+      <div class="step-text">Receive a full analysis with personalised recommendations and guidance on next steps for your skin.</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM CTA -->
+<div class="cta-wrap">
+  <div class="cta-title">Ready to understand<br><em>your skin?</em></div>
+  <div class="cta-sub">Create a free account and get your first skin analysis in under a minute.</div>
+  <a href="{{ url_for('register') }}" class="btn-primary-land">Create Free Account</a>
+</div>
+
+<div class="lfoot">AcneVision &copy; 2026 &nbsp;·&nbsp; Built for skin health awareness</div>
+
+</div><!-- /land-wrap -->
+{% endblock %}

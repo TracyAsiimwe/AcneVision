@@ -9,8 +9,6 @@ load_dotenv()
 
 
 from chatbot.simple_bot import generate_ai_response
-from chatbot.simple_bot import warmup_model
-warmup_model()
 
 # Try to import medical report generator; provide fallback if not available
 try:
@@ -82,6 +80,7 @@ from utils.gradcam import generate_gradcam_heatmap
 from utils.skin_features import analyze_skin_features
 from utils.report_generator import generate_skin_report
 from utils.gemini_text_generator import generate_gemini_insights
+from utils.cloud_storage import upload_image
 
 # =========================================================
 # AI HELPER FUNCTIONS
@@ -581,6 +580,17 @@ app = Flask(__name__)
 app.jinja_env.globals['enumerate'] = enumerate
 app.secret_key = os.getenv('SECRET_KEY', 'acnevision-dev-key-change-in-prod')
 
+def img_src(value, folder='uploads'):
+    """Return a usable src URL regardless of whether value is a Cloudinary
+    URL, an absolute path (/static/...), or a bare filename (legacy DB rows)."""
+    if not value:
+        return ''
+    if value.startswith('http') or value.startswith('/'):
+        return value
+    return f'/static/{folder}/{value}'
+
+app.jinja_env.globals['img_src'] = img_src
+
 BASE_DIR       = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER  = os.path.join(BASE_DIR, 'static', 'uploads')
 HEATMAP_FOLDER = os.path.join(BASE_DIR, 'static', 'heatmaps')
@@ -666,19 +676,7 @@ except Exception as e:
     print(f"[WARNING] Model not loaded: {e}")
     MODEL = None
 
-# Warm up phi3 so first chat response is not slow
-import threading
-
-def _warmup():
-    try:
-        from chatbot.simple_bot import warmup_model, check_ollama
-        if check_ollama():
-            print("[INFO] Warming up phi3...")
-            warmup_model()
-    except Exception as e:
-        print(f"[INFO] phi3 warmup skipped: {e}")
-
-threading.Thread(target=_warmup, daemon=True).start()
+print("[INFO] Chatbot backend: Gemini API")
 
 
 # =========================================================
@@ -753,6 +751,45 @@ def logout():
     logout_user()
     flash('You have been signed out.', 'success')
     return redirect(url_for('login'))
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'change_password':
+            current_pw  = request.form.get('current_password', '')
+            new_pw      = request.form.get('new_password', '')
+            confirm_pw  = request.form.get('confirm_password', '')
+
+            if not check_password_hash(current_user.password, current_pw):
+                flash('Current password is incorrect.', 'error')
+            elif len(new_pw) < 6:
+                flash('New password must be at least 6 characters.', 'error')
+            elif new_pw != confirm_pw:
+                flash('New passwords do not match.', 'error')
+            else:
+                current_user.password = generate_password_hash(new_pw)
+                db.session.commit()
+                flash('Password updated successfully.', 'success')
+
+        elif action == 'delete_account':
+            confirm_pw = request.form.get('delete_password', '')
+            if not check_password_hash(current_user.password, confirm_pw):
+                flash('Incorrect password. Account not deleted.', 'error')
+            else:
+                user_id = current_user.id
+                logout_user()
+                Analysis.query.filter_by(user_id=user_id).delete()
+                User.query.filter_by(id=user_id).delete()
+                db.session.commit()
+                flash('Your account has been deleted.', 'success')
+                return redirect(url_for('login'))
+
+    total_scans = Analysis.query.filter_by(user_id=current_user.id).count()
+    return render_template('profile.html', total_scans=total_scans)
 
 
 # =========================================================
@@ -869,9 +906,10 @@ def view_analysis(analysis_id):
 # =========================================================
 
 @app.route('/')
-@login_required
 def index():
-    return render_template('index.html')
+    if current_user.is_authenticated:
+        return render_template('index.html')
+    return render_template('landing.html')
 
 
 # =========================================================
@@ -884,10 +922,10 @@ def _run_pipeline(face_img, original_filename, ts, uid):
     Returns a dict of all result values.
     """
     face_filename = f"face_{ts}_{uid}.jpg"
-    cv2.imwrite(
-        os.path.join(UPLOAD_FOLDER, face_filename),
-        cv2.cvtColor(face_img, cv2.COLOR_RGB2BGR)
-    )
+    face_local = os.path.join(UPLOAD_FOLDER, face_filename)
+    cv2.imwrite(face_local, cv2.cvtColor(face_img, cv2.COLOR_RGB2BGR))
+    _fu = upload_image(face_local, 'acnevision/faces')
+    face_image_src = _fu or f"/static/uploads/{face_filename}"
 
     if MODEL is None:
         raise Exception("Model not loaded. Run training/train.py first.")
@@ -904,15 +942,16 @@ def _run_pipeline(face_img, original_filename, ts, uid):
     try:
         from utils.lesion_detector import annotate_face
         annotated_bgr, found_features = annotate_face(face_img, severity)
-        annotated_filename = f"annotated_{ts}_{uid}.jpg"
-        cv2.imwrite(
-            os.path.join(UPLOAD_FOLDER, annotated_filename),
-            annotated_bgr
-        )
+        annotated_filename  = f"annotated_{ts}_{uid}.jpg"
+        annotated_local     = os.path.join(UPLOAD_FOLDER, annotated_filename)
+        cv2.imwrite(annotated_local, annotated_bgr)
+        _au = upload_image(annotated_local, 'acnevision/annotated')
+        annotated_image_src = _au or f"/static/uploads/{annotated_filename}"
     except Exception as le:
         print(f"[WARNING] Lesion detection skipped: {le}")
-        annotated_filename = None
-        found_features     = {}
+        annotated_filename  = None
+        annotated_image_src = None
+        found_features      = {}
 
     evidence = get_evidence_explanation(
         raw_class      = raw_class,
@@ -925,10 +964,15 @@ def _run_pipeline(face_img, original_filename, ts, uid):
     score_offset = 440 - (440 * health_score / 100)
 
     heatmap_filename = f"heatmap_{ts}_{uid}.png"
+    heatmap_local    = os.path.join(HEATMAP_FOLDER, heatmap_filename)
     heatmap_ok = generate_gradcam_heatmap(
-        MODEL, face_img, pred['class_index'],
-        os.path.join(HEATMAP_FOLDER, heatmap_filename)
+        MODEL, face_img, pred['class_index'], heatmap_local
     )
+    if heatmap_ok:
+        _hu = upload_image(heatmap_local, 'acnevision/heatmaps')
+        heatmap_image_src = _hu or f"/static/heatmaps/{heatmap_filename}"
+    else:
+        heatmap_image_src = None
 
     zones      = generate_face_region_analysis(features)
     insights   = generate_condition_insights(features)
@@ -987,18 +1031,59 @@ def _run_pipeline(face_img, original_filename, ts, uid):
     what_we_observed = generate_observation_text(raw_class, lesion_breakdown, zone_percentages, skin_type)
     what_this_means  = generate_meaning_text(raw_class, skin_type, inflammation_label)
 
-    # 4. Recommendations fallback
+    # 4. Recommendations fallback — personalised by severity
     if recommendations is None:
-        recommendations = [
-            {'label': 'Cleansing', 'title': 'Gentle Cleanser',
-             'text': 'Use a mild non-comedogenic cleanser twice daily.'},
-            {'label': 'Habit', 'title': 'Hands Off',
-             'text': 'Avoid picking or touching your face.'},
-            {'label': 'Lifestyle', 'title': 'Hydration',
-             'text': 'Drink 8+ glasses of water daily.'},
-            {'label': 'Protection', 'title': 'SPF Daily',
-             'text': 'Apply SPF 30+ every morning.'},
-        ]
+        _recs = {
+            'clear_skin': [
+                {'label': 'Cleansing',      'title': 'Maintain Your Routine',
+                 'text': 'Your skin is clear — keep using a gentle non-comedogenic cleanser twice daily to maintain it.'},
+                {'label': 'Habit',          'title': 'Stay Consistent',
+                 'text': 'Avoid touching your face and keep up your current skincare habits to prevent breakouts.'},
+                {'label': 'Lifestyle',      'title': 'Hydration & Diet',
+                 'text': 'Drink 8+ glasses of water daily and eat a balanced diet to keep your skin barrier strong.'},
+                {'label': 'Protection',     'title': 'SPF Every Day',
+                 'text': 'Apply SPF 30+ every morning — UV exposure is the leading cause of premature skin ageing.'},
+                {'label': 'Dermatologist',  'title': 'Annual Skin Check',
+                 'text': 'Even with clear skin, an annual visit to a dermatologist is recommended to catch any changes early.'},
+            ],
+            'mild': [
+                {'label': 'Cleansing',      'title': 'Salicylic Acid Cleanser',
+                 'text': 'Switch to a salicylic acid (0.5–2%) cleanser twice daily to unclog pores and reduce mild breakouts.'},
+                {'label': 'Habit',          'title': 'Hands Off',
+                 'text': 'Avoid picking or squeezing lesions — this spreads bacteria and increases the risk of scarring.'},
+                {'label': 'Lifestyle',      'title': 'Pillow & Diet',
+                 'text': 'Change pillowcases twice weekly and reduce dairy and high-sugar foods, which can trigger breakouts.'},
+                {'label': 'Protection',     'title': 'Non-comedogenic SPF',
+                 'text': 'Use an oil-free, non-comedogenic SPF 30+ daily — some sunscreens can clog pores and worsen acne.'},
+                {'label': 'Dermatologist',  'title': 'Consider a Derm Visit',
+                 'text': 'A dermatologist can prescribe topical retinoids or antibiotics that are more effective than over-the-counter products for persistent mild acne.'},
+            ],
+            'moderate': [
+                {'label': 'Cleansing',      'title': 'Active Ingredient Wash',
+                 'text': 'Use a benzoyl peroxide (2.5–5%) or salicylic acid cleanser — these reduce bacteria and unclog pores.'},
+                {'label': 'Habit',          'title': 'No Picking',
+                 'text': 'Picking inflamed papules and pustules at this severity significantly increases permanent scarring risk.'},
+                {'label': 'Lifestyle',      'title': 'Stress & Sleep',
+                 'text': 'Prioritise 7–8 hours of sleep and manage stress — both directly trigger the hormones that worsen acne.'},
+                {'label': 'Protection',     'title': 'Lightweight SPF',
+                 'text': 'Apply a lightweight, gel-based SPF 30+ daily to protect against UV darkening of existing marks.'},
+                {'label': 'Dermatologist',  'title': 'See a Dermatologist',
+                 'text': 'At this severity, a dermatologist visit is strongly recommended — they can prescribe topical or oral antibiotics and retinoids that will make a significant difference.'},
+            ],
+            'severe': [
+                {'label': 'Cleansing',      'title': 'Gentle Wash Only',
+                 'text': 'Use only a very gentle, fragrance-free cleanser — harsh products will further irritate severely inflamed skin.'},
+                {'label': 'Habit',          'title': 'Do Not Pick',
+                 'text': 'Picking at severe acne causes deep scarring that can be permanent — resist the urge completely.'},
+                {'label': 'Lifestyle',      'title': 'Reduce Triggers',
+                 'text': 'Avoid high-glycaemic foods, dairy, and high stress — all have strong links to severe acne flares.'},
+                {'label': 'Protection',     'title': 'Gentle SPF',
+                 'text': 'Apply a mineral (zinc-based) SPF 30+ to protect sensitive, inflamed skin without irritation.'},
+                {'label': 'Dermatologist',  'title': 'Dermatologist Required',
+                 'text': 'Severe acne requires prescription treatment — a dermatologist may recommend oral isotretinoin, antibiotics, or hormonal therapy. Please book an appointment as soon as possible.'},
+            ],
+        }
+        recommendations = _recs.get(raw_class, _recs['mild'])
 
     report_data = {
         'timestamp'    : datetime.now().strftime("%B %d, %Y at %I:%M %p"),
@@ -1029,9 +1114,9 @@ def _run_pipeline(face_img, original_filename, ts, uid):
                 redness_level           = determine_level(rd),
                 hyperpigmentation_level = determine_level(hp),
                 texture_level           = determine_level(tx),
-                face_image              = face_filename,
-                annotated_image         = annotated_filename,
-                heatmap_image           = heatmap_filename if heatmap_ok else None,
+                face_image              = face_image_src,
+                annotated_image         = annotated_image_src,
+                heatmap_image           = heatmap_image_src,
                 report_file             = report_filename,
             )
             db.session.add(analysis)
@@ -1050,9 +1135,9 @@ def _run_pipeline(face_img, original_filename, ts, uid):
         probs             = probs,
         # ── Images ──
         original_image    = original_filename,
-        face_image        = face_filename,
-        annotated_image   = annotated_filename,
-        heatmap_image     = heatmap_filename if heatmap_ok else None,
+        face_image        = face_image_src,
+        annotated_image   = annotated_image_src,
+        heatmap_image     = heatmap_image_src,
         # ── Lesion detection (from lesion_detector) ──
         found_features    = found_features,
         # ── AI outputs ──
@@ -1480,19 +1565,13 @@ def chatbot_stream():
 @app.route('/chatbot/status')
 @login_required
 def chatbot_status():
-    try:
-        from chatbot.simple_bot import check_ollama, check_model_loaded
-        online      = check_ollama()
-        model_ready = check_model_loaded() if online else False
-        from chatbot.simple_bot import _OLLAMA_UP
-        backend = 'ollama' if _OLLAMA_UP else 'gemini'
-        return jsonify({
-            'online'     : online,
-            'model_ready': model_ready,
-            'model'      : backend
-        })
-    except Exception:
-        return jsonify({'online': False, 'model_ready': False})
+    from chatbot.simple_bot import GEMINI_API_KEY
+    ready = bool(GEMINI_API_KEY)
+    return jsonify({
+        'online'     : ready,
+        'model_ready': ready,
+        'model'      : 'gemini',
+    })
 
 
 # =========================================================
@@ -1500,8 +1579,9 @@ def chatbot_status():
 # =========================================================
 
 if __name__ == '__main__':
+    _port = int(os.getenv('PORT', 8000))
     print("\n====================================")
     print("  AcneVision")
-    print("  Server: http://127.0.0.1:5000")
+    print(f"  Server: http://127.0.0.1:{_port}")
     print("====================================\n")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=_port)

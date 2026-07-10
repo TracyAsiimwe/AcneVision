@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}AcneVision{% endblock %}</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <!-- Apply theme before render to prevent flash -->
   <script>
@@ -14,6 +14,12 @@
     })();
   </script>
   <script defer src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    function toggleMobileNav() {
+      document.getElementById('nav-links').classList.toggle('open');
+      document.getElementById('nav-burger').classList.toggle('open');
+    }
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -26,9 +32,9 @@
       <span class="nav-name">AcneVision</span>
     </div>
 
-    <div class="nav-links">
+    <div class="nav-links" id="nav-links">
       {% if current_user.is_authenticated %}
-        <span class="nav-tag nav-tag-user">{{ current_user.username }}</span>
+        <a href="{{ url_for('profile') }}" class="nav-tag nav-tag-user">{{ current_user.username }}</a>
         <a href="{{ url_for('index') }}"   class="nav-tag">New Analysis</a>
         <a href="{{ url_for('history') }}" class="nav-tag">History</a>
         <a href="{{ url_for('learn') }}"   class="nav-tag">Learn</a>
@@ -41,6 +47,9 @@
     </div>
 
     <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    <button class="nav-burger" id="nav-burger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 {% endblock %}

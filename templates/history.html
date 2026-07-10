@@ -44,7 +44,7 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
                 gap:14px;margin-bottom:36px;" class="fade-up d3">
       <div class="av-card" style="text-align:center;">
-        <div style="font-family:'DM Serif Display',serif;font-size:2.4em;
+        <div style="font-family:'Playfair Display',serif;font-size:2.4em;
                     color:var(--text);line-height:1;">{{ analyses|length }}</div>
         <div style="font-size:0.78em;color:var(--text-3);margin-top:4px;
                     text-transform:uppercase;letter-spacing:1px;font-weight:600;">
@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="av-card" style="text-align:center;">
-        <div style="font-family:'DM Serif Display',serif;font-size:2.4em;
+        <div style="font-family:'Playfair Display',serif;font-size:2.4em;
                     color:var(--accent);line-height:1;">
           {{ analyses[0].health_score }}
         </div>
@@ -62,7 +62,7 @@
         </div>
       </div>
       <div class="av-card" style="text-align:center;">
-        <div style="font-family:'DM Serif Display',serif;font-size:1.3em;
+        <div style="font-family:'Playfair Display',serif;font-size:1.3em;
                     color:var(--text);line-height:1.2;padding-top:6px;">
           {{ analyses[0].severity.replace('_',' ').title() }}
         </div>
@@ -85,7 +85,7 @@
                   display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
 
         {% if a.face_image %}
-        <img src="{{ url_for('static', filename='uploads/' ~ a.face_image) }}"
+        <img src="{{ img_src(a.face_image) }}"
              alt="Scan"
              style="width:64px;height:64px;object-fit:cover;
                     border-radius:10px;border:1px solid var(--card-border);
@@ -103,7 +103,7 @@
         </div>
 
         <div style="text-align:center;min-width:70px;">
-          <div style="font-family:'DM Serif Display',serif;
+          <div style="font-family:'Playfair Display',serif;
                       font-size:1.8em;color:{{ c }};line-height:1;">
             {{ a.health_score }}
           </div>
@@ -148,7 +148,7 @@
 
   {% else %}
     <div class="av-card" style="text-align:center;padding:60px 40px;">
-      <div style="font-family:'DM Serif Display',serif;
+      <div style="font-family:'Playfair Display',serif;
                   font-size:1.4em;color:var(--text);margin-bottom:10px;">
         No analyses yet
       </div>

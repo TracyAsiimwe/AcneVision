@@ -83,14 +83,17 @@ no markdown, no code fences, in exactly this structure:
     {{"label": "Cleansing", "title": "<short title>", "text": "<1-2 sentence actionable recommendation>"}},
     {{"label": "Habit", "title": "<short title>", "text": "<1-2 sentence actionable recommendation>"}},
     {{"label": "Lifestyle", "title": "<short title>", "text": "<1-2 sentence actionable recommendation>"}},
-    {{"label": "Protection", "title": "<short title>", "text": "<1-2 sentence actionable recommendation>"}}
+    {{"label": "Protection", "title": "<short title>", "text": "<1-2 sentence actionable recommendation>"}},
+    {{"label": "Dermatologist", "title": "<short title>", "text": "<1-2 sentence recommendation to consult a dermatologist for prescription treatments tailored to the detected severity>"}}
   ]
 }}
 
-Tailor all four recommendations specifically to the severity level and
+Tailor all five recommendations specifically to the severity level and
 detected features above. Never diagnose. Never suggest the severity is
-different from what is given. If severity is "Severe Acne", include a
-recommendation that strongly encourages seeing a dermatologist.
+different from what is given. The dermatologist recommendation should
+always be included and should mention that a dermatologist can prescribe
+treatments (such as topical retinoids, antibiotics, or other medications)
+that are not available over the counter.
 """
 
         # Timeout prevents the request from hanging the Flask worker

@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
-{% block title %}AcneVision — Learn{% endblock %}
+{% block title %}AcneVision â€” Learn{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -13,27 +13,27 @@
     --gold:#c9a96e; --white:#ffffff; --green:#4caf7d;
   }
 
-  /* ── PAGE LAYOUT ── */
+  /* â”€â”€ PAGE LAYOUT â”€â”€ */
   .learn-wrap { max-width:1100px; margin:0 auto; padding:0 32px 64px; }
 
-  /* ── HERO ── */
+  /* â”€â”€ HERO â”€â”€ */
   .learn-hero { padding:60px 0 48px; text-align:center; }
   .learn-hero .section-label { font-size:0.73em; font-weight:700; color:var(--rose); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; }
-  .learn-hero .hero-title { font-family:'DM Serif Display',serif; font-size:2.8em; color:var(--white); letter-spacing:-1px; margin-bottom:12px; line-height:1.1; }
+  .learn-hero .hero-title { font-family:'Playfair Display',serif; font-size:2.8em; color:var(--white); letter-spacing:-1px; margin-bottom:12px; line-height:1.1; }
   .learn-hero .hero-title em { font-style:italic; color:var(--rose); }
   .learn-hero .hero-desc { font-size:0.95em; color:var(--text-2); line-height:1.8; max-width:520px; margin:0 auto; }
 
-  /* ── SECTION HEADER ── */
+  /* â”€â”€ SECTION HEADER â”€â”€ */
   .learn-section { padding:0 0 52px; }
   .learn-section-header { display:flex; align-items:baseline; gap:14px; margin-bottom:26px; border-bottom:1px solid var(--border); padding-bottom:14px; }
-  .learn-section-header h2 { font-family:'DM Serif Display',serif; font-size:1.6em; color:var(--white); letter-spacing:-0.4px; }
+  .learn-section-header h2 { font-family:'Playfair Display',serif; font-size:1.6em; color:var(--white); letter-spacing:-0.4px; }
   .learn-section-header span { font-size:0.73em; color:var(--text-3); text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
 
-  /* ── CARD GRID ── */
+  /* â”€â”€ CARD GRID â”€â”€ */
   .learn-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
   .learn-grid.wide { grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); }
 
-  /* ── LEARN CARD ── */
+  /* â”€â”€ LEARN CARD â”€â”€ */
   .learn-card {
     background:var(--card);
     border:1px solid var(--border);
@@ -64,7 +64,7 @@
     font-size:17px;
     margin-bottom:14px;
   }
-  .learn-card h3 { font-family:'DM Serif Display',serif; font-size:1.1em; color:var(--white); margin-bottom:6px; }
+  .learn-card h3 { font-family:'Playfair Display',serif; font-size:1.1em; color:var(--white); margin-bottom:6px; }
   .learn-card p { font-size:0.82em; color:var(--text-2); line-height:1.6; }
   .learn-card-footer { margin-top:16px; display:flex; align-items:center; justify-content:space-between; }
   .learn-tag {
@@ -75,10 +75,10 @@
     padding:3px 10px; border-radius:20px;
   }
 
-  /* ── SECTION DIVIDER ── */
+  /* â”€â”€ SECTION DIVIDER â”€â”€ */
   .learn-divider { height:1px; background:var(--border); margin:0 0 52px; }
 
-  /* ── MODAL OVERLAY ── */
+  /* â”€â”€ MODAL OVERLAY â”€â”€ */
   .learn-modal {
     position:fixed; inset:0; z-index:1000;
     background:rgba(10,10,15,0.7);
@@ -89,7 +89,7 @@
   .learn-modal.on { display:flex; animation:lm-fade .18s ease; }
   @keyframes lm-fade { from{opacity:0} to{opacity:1} }
 
-  /* ── MODAL CARD ── */
+  /* â”€â”€ MODAL CARD â”€â”€ */
   .learn-modal-card {
     background:var(--card);
     border:1px solid var(--border);
@@ -118,7 +118,7 @@
     border-bottom:1px solid var(--border);
   }
   .learn-modal-title {
-    font-family:'DM Serif Display',serif;
+    font-family:'Playfair Display',serif;
     font-size:1.45em; color:var(--white);
     margin-bottom:5px; letter-spacing:-0.4px;
   }
@@ -126,7 +126,7 @@
 
   .learn-modal-body { padding:22px 28px 28px; }
 
-  /* ── MODAL INNER COMPONENTS ── */
+  /* â”€â”€ MODAL INNER COMPONENTS â”€â”€ */
   .lm-block {
     background:var(--bg-2);
     border:1px solid var(--border);
@@ -203,15 +203,15 @@
   .lm-warn ul { padding-left:16px; display:flex; flex-direction:column; gap:5px; }
   .lm-warn li { font-size:0.83em; color:var(--text-2); line-height:1.6; }
 
-  /* ── TIPS BOX (matching dark theme) ── */
+  /* â”€â”€ TIPS BOX (matching dark theme) â”€â”€ */
   .tips-box { background:var(--bg-2); border-radius:18px; padding:36px; margin:0 0 56px; border:1px solid var(--border); }
-  .tips-title { font-family:'DM Serif Display',serif; font-size:1.4em; color:var(--white); margin-bottom:22px; }
+  .tips-title { font-family:'Playfair Display',serif; font-size:1.4em; color:var(--white); margin-bottom:22px; }
   .tips-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
   .tip { display:flex; align-items:flex-start; gap:11px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:9px; padding:12px 14px; font-size:0.83em; color:var(--text-2); line-height:1.5; transition:all 0.2s; }
   .tip:hover { background:rgba(255,255,255,0.06); color:var(--text); }
   .tip-mark { width:5px; height:5px; border-radius:50%; background:var(--rose); flex-shrink:0; margin-top:5px; }
 
-  /* ── RESPONSIVE ── */
+  /* â”€â”€ RESPONSIVE â”€â”€ */
   @media(max-width:768px){
     .learn-wrap { padding:0 18px 48px; }
     .learn-hero .hero-title { font-size:2em; }
@@ -219,7 +219,7 @@
     .lm-chip-grid { grid-template-columns:1fr; }
     .tips-grid { grid-template-columns:1fr; }
   }
-/* ── SEVERITY SCALE SECTION ── */
+/* â”€â”€ SEVERITY SCALE SECTION â”€â”€ */
 .severity-scale { display:flex; flex-direction:column; gap:12px; }
 .severity-row {
   background:var(--card);
@@ -239,7 +239,7 @@
   box-shadow:0 0 0 4px color-mix(in srgb, var(--sv-color) 18%, transparent);
 }
 .severity-info { flex:1; }
-.severity-name { font-family:'DM Serif Display',serif; font-size:1.15em; color:var(--white); }
+.severity-name { font-family:'Playfair Display',serif; font-size:1.15em; color:var(--white); }
 .severity-range { font-size:0.78em; color:var(--text-3); margin-top:2px; }
 .severity-arrow {
   font-size:1em; color:var(--text-3);
@@ -297,7 +297,7 @@
     <p class="hero-desc">A plain-language primer on acne types, skin types, and ingredients that actually do something.</p>
   </div>
 
-  <!-- ══ SECTION 1: SKIN TYPES ══ -->
+  <!-- â•â• SECTION 1: SKIN TYPES â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>Skin types</h2>
@@ -326,7 +326,7 @@
       <div class="learn-card" onclick="openLearnModal('combination')">
         <div class="learn-card-icon">&#9878;&#65039;</div>
         <h3>Combination</h3>
-        <p>Oily T-zone, normal-to-dry cheeks — mixed signals.</p>
+        <p>Oily T-zone, normal-to-dry cheeks â€” mixed signals.</p>
         <div class="learn-card-footer">
           <span class="learn-tag">Skin Type</span>
         </div>
@@ -355,7 +355,7 @@
 
   <div class="learn-divider"></div>
 
-  <!-- ══ SECTION 2: ACNE LESION TYPES ══ -->
+  <!-- â•â• SECTION 2: ACNE LESION TYPES â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>Acne lesion types</h2>
@@ -413,7 +413,7 @@
 
   <div class="learn-divider"></div>
 
-  <!-- ══ SECTION: ACNE SEVERITY LEVELS ══ -->
+  <!-- â•â• SECTION: ACNE SEVERITY LEVELS â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>Understanding acne severity</h2>
@@ -447,7 +447,7 @@
             </div>
             <div class="severity-section">
               <div class="severity-section-title">What this means</div>
-              <p>Your skin barrier is healthy and functioning well. Focus on maintenance — gentle cleansing, daily moisturiser, and SPF — to keep it this way long term.</p>
+              <p>Your skin barrier is healthy and functioning well. Focus on maintenance â€” gentle cleansing, daily moisturiser, and SPF â€” to keep it this way long term.</p>
             </div>
           </div>
         </div>
@@ -468,7 +468,7 @@
           <div class="severity-body-inner">
             <div class="severity-section">
               <div class="severity-section-title">How to know</div>
-              <p>You notice a scattering of blackheads, whiteheads, or small bumps — mostly on the forehead, nose, or chin. No significant redness or pain, and breakouts are limited and manageable.</p>
+              <p>You notice a scattering of blackheads, whiteheads, or small bumps â€” mostly on the forehead, nose, or chin. No significant redness or pain, and breakouts are limited and manageable.</p>
             </div>
             <div class="severity-section">
               <div class="severity-section-title">Lesion types involved</div>
@@ -480,7 +480,7 @@
             </div>
             <div class="severity-section">
               <div class="severity-section-title">What this means</div>
-              <p>Mild acne responds well to consistent over-the-counter care. Salicylic acid or benzoyl peroxide used regularly for 6–8 weeks typically clears most lesions without needing a prescription.</p>
+              <p>Mild acne responds well to consistent over-the-counter care. Salicylic acid or benzoyl peroxide used regularly for 6â€“8 weeks typically clears most lesions without needing a prescription.</p>
             </div>
           </div>
         </div>
@@ -492,7 +492,7 @@
           <div class="severity-dot"></div>
           <div class="severity-info">
             <div class="severity-name">Moderate Acne</div>
-            <div class="severity-range">20–50 lesions</div>
+            <div class="severity-range">20â€“50 lesions</div>
           </div>
           <div class="severity-arrow">&#9660;</div>
         </div>
@@ -535,7 +535,7 @@
           <div class="severity-body-inner">
             <div class="severity-section">
               <div class="severity-section-title">How to know</div>
-              <p>Widespread, painful, deep lumps under the skin that don't come to a head — often on the jawline, cheeks, chest, or back. Lesions persist for weeks and frequently leave marks or scars after healing.</p>
+              <p>Widespread, painful, deep lumps under the skin that don't come to a head â€” often on the jawline, cheeks, chest, or back. Lesions persist for weeks and frequently leave marks or scars after healing.</p>
             </div>
             <div class="severity-section">
               <div class="severity-section-title">Lesion types involved</div>
@@ -560,7 +560,7 @@
 
   <div class="learn-divider"></div>
 
-  <!-- ══ SECTION 3: KEY INGREDIENTS ══ -->
+  <!-- â•â• SECTION 3: KEY INGREDIENTS â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>Key ingredients</h2>
@@ -571,7 +571,7 @@
       <div class="learn-card" onclick="openLearnModal('salicylic')">
         <div class="learn-card-icon">&#129516;</div>
         <h3>Salicylic Acid</h3>
-        <p>Unclogs pores. Great for comedones. Effective at 0.5–2%.</p>
+        <p>Unclogs pores. Great for comedones. Effective at 0.5â€“2%.</p>
         <div class="learn-card-footer">
           <span class="learn-tag">BHA</span>
         </div>
@@ -598,7 +598,7 @@
       <div class="learn-card" onclick="openLearnModal('retinoids')">
         <div class="learn-card-icon">&#127769;</div>
         <h3>Retinoids (OTC)</h3>
-        <p>Cell turnover, prevents acne. Start 2×/week, evening only.</p>
+        <p>Cell turnover, prevents acne. Start 2Ã—/week, evening only.</p>
         <div class="learn-card-footer">
           <span class="learn-tag">Vitamin A</span>
         </div>
@@ -616,7 +616,7 @@
     </div>
   </section>
 
-  <!-- ══ SECTION: WHAT CAUSES ACNE ══ -->
+  <!-- â•â• SECTION: WHAT CAUSES ACNE â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>What causes acne</h2>
@@ -627,7 +627,7 @@
       <div class="learn-card" onclick="openLearnModal('causes')">
         <div class="learn-card-icon">&#129516;</div>
         <h3>Acne Causes</h3>
-        <p>Excess oil, clogged pores, bacteria, and inflammation — the four pillars of acne explained.</p>
+        <p>Excess oil, clogged pores, bacteria, and inflammation â€” the four pillars of acne explained.</p>
         <div class="learn-card-footer">
           <span class="learn-tag">Causes</span>
         </div>
@@ -638,7 +638,7 @@
 
   <div class="learn-divider"></div>
 
-  <!-- ══ SECTION: COMMON ACNE MYTHS ══ -->
+  <!-- â•â• SECTION: COMMON ACNE MYTHS â•â• -->
   <section class="learn-section">
     <div class="learn-section-header">
       <h2>Common acne myths</h2>
@@ -664,9 +664,9 @@
   <div class="tips-box" style="margin-bottom:0;">
     <div class="tips-title">When to see a dermatologist</div>
     <div class="tips-grid">
-      <div class="tip"><span class="tip-mark"></span>Cystic or nodular acne — risk of permanent scarring</div>
+      <div class="tip"><span class="tip-mark"></span>Cystic or nodular acne â€” risk of permanent scarring</div>
       <div class="tip"><span class="tip-mark"></span>Severe inflammation or sudden flare-ups</div>
-      <div class="tip"><span class="tip-mark"></span>No improvement after 8–12 weeks of consistent self-care</div>
+      <div class="tip"><span class="tip-mark"></span>No improvement after 8â€“12 weeks of consistent self-care</div>
       <div class="tip"><span class="tip-mark"></span>Acne is affecting your mental health or self-esteem</div>
       <div class="tip"><span class="tip-mark"></span>Spreading to chest, back, or shoulders</div>
       <div class="tip"><span class="tip-mark"></span>Over-the-counter treatments cause irritation or worsen skin</div>
@@ -676,9 +676,9 @@
 </div><!-- /learn-wrap -->
 
 
-<!-- ════════════════════════════════
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      LEARN MODAL (single, reused)
-════════════════════════════════ -->
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="learn-modal" id="learnModal" onclick="closeLearnOnOverlay(event)">
   <div class="learn-modal-card" onclick="event.stopPropagation()">
     <button class="learn-modal-close" onclick="closeLearnModal()">&times;</button>
@@ -690,7 +690,7 @@
 <script>
 const learnData = {
 
-  /* ── SKIN TYPES ── */
+  /* â”€â”€ SKIN TYPES â”€â”€ */
   oily: {
     title: 'Oily skin',
     sub: 'Excess sebum production, visible shine, enlarged pores.',
@@ -699,7 +699,7 @@ const learnData = {
         <div class="lm-block-title">&#129524; The At-Home Bare Face Test</div>
         <div class="lm-steps">
           <div class="lm-step"><div class="lm-step-num">1</div><div class="lm-step-text"><strong>Wash</strong><span>Cleanse with a gentle, non-foaming cleanser and pat dry.</span></div></div>
-          <div class="lm-step"><div class="lm-step-num">2</div><div class="lm-step-text"><strong>Wait</strong><span>Leave your face completely bare — no toner, serum or moisturiser — for 30–60 minutes.</span></div></div>
+          <div class="lm-step"><div class="lm-step-num">2</div><div class="lm-step-text"><strong>Wait</strong><span>Leave your face completely bare â€” no toner, serum or moisturiser â€” for 30â€“60 minutes.</span></div></div>
           <div class="lm-step"><div class="lm-step-num">3</div><div class="lm-step-text"><strong>Observe</strong><span>Examine your skin in natural light and match your result below.</span></div></div>
         </div>
         <div class="lm-choices" style="margin-top:14px;">
@@ -713,13 +713,13 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">What to use</div>
         <ul>
-          <li>Gel or foaming cleanser — removes excess sebum without stripping</li>
-          <li>Salicylic acid toner (0.5–2%) — keeps pores clear daily</li>
-          <li>Lightweight, oil-free moisturiser — hydration is still non-negotiable</li>
-          <li>Mattifying SPF 30+ — daily protection without added greasiness</li>
+          <li>Gel or foaming cleanser â€” removes excess sebum without stripping</li>
+          <li>Salicylic acid toner (0.5â€“2%) â€” keeps pores clear daily</li>
+          <li>Lightweight, oil-free moisturiser â€” hydration is still non-negotiable</li>
+          <li>Mattifying SPF 30+ â€” daily protection without added greasiness</li>
         </ul>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Darker skin note:</strong> Oiliness can appear as a subtle sheen rather than obvious grease. Post-inflammatory hyperpigmentation from acne is more prominent — prioritise niacinamide and SPF.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Darker skin note:</strong> Oiliness can appear as a subtle sheen rather than obvious grease. Post-inflammatory hyperpigmentation from acne is more prominent â€” prioritise niacinamide and SPF.</span></div>
     `
   },
 
@@ -739,11 +739,11 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">What to use</div>
         <ul>
-          <li>Cream or oil cleanser — avoid foaming formulas</li>
+          <li>Cream or oil cleanser â€” avoid foaming formulas</li>
           <li>Hyaluronic acid serum applied to damp skin</li>
-          <li>Rich ceramide moisturiser — repairs and seals the barrier</li>
+          <li>Rich ceramide moisturiser â€” repairs and seals the barrier</li>
           <li>Facial oil (squalane or rosehip) at night for extra nourishment</li>
-          <li>Hydrating SPF — avoid alcohol-based sunscreens</li>
+          <li>Hydrating SPF â€” avoid alcohol-based sunscreens</li>
         </ul>
       </div>
       <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Key insight:</strong> Dry skin can still get acne. Skipping moisturiser to "dry out" breakouts actually worsens inflammation and slows healing.</span></div>
@@ -792,7 +792,7 @@ const learnData = {
         <ul>
           <li>Mild cleanser, balanced moisturiser morning and night</li>
           <li>Antioxidant serum (Vitamin C) in the morning for protection</li>
-          <li>SPF 30+ daily — the single most impactful anti-ageing step</li>
+          <li>SPF 30+ daily â€” the single most impactful anti-ageing step</li>
           <li>Weekly gentle exfoliation to maintain radiance and cell turnover</li>
         </ul>
       </div>
@@ -814,20 +814,20 @@ const learnData = {
         </ul>
       </div>
       <div class="lm-block">
-        <div class="lm-block-title">What to use — and avoid</div>
+        <div class="lm-block-title">What to use â€” and avoid</div>
         <div class="lm-chip-grid">
           <div class="lm-chip"><strong>&#10003; Use</strong><span>Centella, allantoin, ceramides, azelaic acid, mineral SPF</span></div>
           <div class="lm-chip"><strong>&#10007; Avoid</strong><span>Fragrances, alcohol, harsh exfoliants, high-percentage actives</span></div>
         </div>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Patch test everything:</strong> Apply new products to your inner forearm for 24–48 hours before using on your face to check for reactions.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Patch test everything:</strong> Apply new products to your inner forearm for 24â€“48 hours before using on your face to check for reactions.</span></div>
     `
   },
 
-  /* ── ACNE LESION TYPES ── */
+  /* â”€â”€ ACNE LESION TYPES â”€â”€ */
   comedones: {
     title: 'Comedones',
-    sub: 'Non-inflammatory clogged pores — the foundation of most acne.',
+    sub: 'Non-inflammatory clogged pores â€” the foundation of most acne.',
     html: `
       <div class="lm-block">
         <div class="lm-block-title">Open vs Closed</div>
@@ -839,9 +839,9 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">Best treatments</div>
         <ul>
-          <li>Salicylic acid (BHA) — oil-soluble; dissolves the plug inside the pore</li>
-          <li>Retinoids — prevent new comedones from forming at the source</li>
-          <li>Regular, gentle chemical exfoliation — avoid harsh physical scrubs</li>
+          <li>Salicylic acid (BHA) â€” oil-soluble; dissolves the plug inside the pore</li>
+          <li>Retinoids â€” prevent new comedones from forming at the source</li>
+          <li>Regular, gentle chemical exfoliation â€” avoid harsh physical scrubs</li>
           <li>Avoid pore-clogging (comedogenic) ingredients in moisturisers and makeup</li>
         </ul>
       </div>
@@ -851,22 +851,22 @@ const learnData = {
 
   papules: {
     title: 'Papules',
-    sub: 'Small, red, tender bumps — early stage inflammatory acne.',
+    sub: 'Small, red, tender bumps â€” early stage inflammatory acne.',
     html: `
       <div class="lm-block">
         <div class="lm-block-title">What is happening</div>
-        <p>A comedone becomes inflamed when C. acnes bacteria proliferate and the immune system responds. The result is a red, raised bump with no visible pus — the inflammation is inside the wall of the pore itself.</p>
+        <p>A comedone becomes inflamed when C. acnes bacteria proliferate and the immune system responds. The result is a red, raised bump with no visible pus â€” the inflammation is inside the wall of the pore itself.</p>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">Best treatments</div>
         <ul>
-          <li>Benzoyl peroxide (2.5–5%) — kills the bacteria causing inflammation</li>
-          <li>Niacinamide — reduces redness and calms the inflammatory response</li>
-          <li>Avoid scrubbing — physical friction significantly worsens papules</li>
+          <li>Benzoyl peroxide (2.5â€“5%) â€” kills the bacteria causing inflammation</li>
+          <li>Niacinamide â€” reduces redness and calms the inflammatory response</li>
+          <li>Avoid scrubbing â€” physical friction significantly worsens papules</li>
           <li>Apply a spot treatment at night and allow it to work undisturbed</li>
         </ul>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Patience matters:</strong> Papules typically resolve in 5–10 days with consistent treatment. Picking dramatically extends that timeline and risks scarring.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Patience matters:</strong> Papules typically resolve in 5â€“10 days with consistent treatment. Picking dramatically extends that timeline and risks scarring.</span></div>
     `
   },
 
@@ -876,18 +876,18 @@ const learnData = {
     html: `
       <div class="lm-block">
         <div class="lm-block-title">What is happening</div>
-        <p>Pustules are papules that have matured — white blood cells accumulate at the infection site, creating the visible pus. This is the body's immune system doing its job, just visibly so.</p>
+        <p>Pustules are papules that have matured â€” white blood cells accumulate at the infection site, creating the visible pus. This is the body's immune system doing its job, just visibly so.</p>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">Best treatments</div>
         <ul>
           <li>Benzoyl peroxide spot treatment applied directly to the lesion</li>
-          <li>Hydrocolloid acne patches — absorb pus overnight while protecting the area</li>
-          <li>Keep hands away from your face — bacteria transfer worsens clusters</li>
+          <li>Hydrocolloid acne patches â€” absorb pus overnight while protecting the area</li>
+          <li>Keep hands away from your face â€” bacteria transfer worsens clusters</li>
           <li>If recurring in clusters, consider a topical antibiotic (prescription)</li>
         </ul>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Acne patches work:</strong> Hydrocolloid patches worn overnight visibly flatten pustules and prevent picking — no medication needed.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Acne patches work:</strong> Hydrocolloid patches worn overnight visibly flatten pustules and prevent picking â€” no medication needed.</span></div>
     `
   },
 
@@ -898,8 +898,8 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">What makes them different</div>
         <ul>
-          <li>Deep in the dermis — surface products cannot reach them alone</li>
-          <li>No visible head — firm and solid to the touch</li>
+          <li>Deep in the dermis â€” surface products cannot reach them alone</li>
+          <li>No visible head â€” firm and solid to the touch</li>
           <li>Tender or painful even without direct pressure</li>
           <li>Can persist for weeks or months without treatment</li>
         </ul>
@@ -907,10 +907,10 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">Treatment options</div>
         <ul>
-          <li>Topical retinoids — long-term prevention by normalising cell turnover</li>
-          <li>Oral antibiotics (prescription) — reduces bacterial load systemically</li>
-          <li>Intralesional cortisone injection — flattens the lesion within 24–48 hours</li>
-          <li>Isotretinoin — for severe or persistent nodular acne cases</li>
+          <li>Topical retinoids â€” long-term prevention by normalising cell turnover</li>
+          <li>Oral antibiotics (prescription) â€” reduces bacterial load systemically</li>
+          <li>Intralesional cortisone injection â€” flattens the lesion within 24â€“48 hours</li>
+          <li>Isotretinoin â€” for severe or persistent nodular acne cases</li>
         </ul>
       </div>
       <div class="lm-warn">
@@ -939,10 +939,10 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">Treatment</div>
         <ul>
-          <li>Do not attempt to pop — this causes deep, permanent scarring</li>
+          <li>Do not attempt to pop â€” this causes deep, permanent scarring</li>
           <li>Dermatologist: cortisone injection for fast lesion relief</li>
           <li>Hormonal therapies (spironolactone, combined pill) for hormonal cysts</li>
-          <li>Isotretinoin — the most effective long-term option for cystic acne</li>
+          <li>Isotretinoin â€” the most effective long-term option for cystic acne</li>
         </ul>
       </div>
       <div class="lm-warn">
@@ -955,7 +955,7 @@ const learnData = {
     `
   },
 
-  /* ── KEY INGREDIENTS ── */
+  /* â”€â”€ KEY INGREDIENTS â”€â”€ */
   salicylic: {
     title: 'Salicylic Acid',
     sub: 'Beta-hydroxy acid (BHA) that penetrates pores and dissolves blockages.',
@@ -967,8 +967,8 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">How to use it</div>
         <ul>
-          <li>0.5–2% concentration — stay within this range for daily use</li>
-          <li>Available in cleanser, toner, or serum format — all effective</li>
+          <li>0.5â€“2% concentration â€” stay within this range for daily use</li>
+          <li>Available in cleanser, toner, or serum format â€” all effective</li>
           <li>Best for: oily skin, blackheads, whiteheads, mild papules</li>
           <li>Start every other day if new to chemical exfoliants</li>
         </ul>
@@ -990,7 +990,7 @@ const learnData = {
         <ul>
           <li>2.5% is as effective as 10% with significantly less irritation</li>
           <li>Available as a wash-off cleanser or leave-on spot treatment</li>
-          <li>Bleaches fabric, towels, and pillowcases — use white linens</li>
+          <li>Bleaches fabric, towels, and pillowcases â€” use white linens</li>
           <li>Apply after moisturiser as a buffer if your skin is reactive</li>
         </ul>
       </div>
@@ -1000,7 +1000,7 @@ const learnData = {
 
   niacinamide: {
     title: 'Niacinamide',
-    sub: 'Vitamin B3 — the most versatile, well-tolerated active ingredient available.',
+    sub: 'Vitamin B3 â€” the most versatile, well-tolerated active ingredient available.',
     html: `
       <div class="lm-block">
         <div class="lm-block-title">What it does</div>
@@ -1015,13 +1015,13 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">How to use it</div>
         <ul>
-          <li>4–10% is the effective range for most benefits</li>
-          <li>Morning or evening — no timing restrictions apply</li>
+          <li>4â€“10% is the effective range for most benefits</li>
+          <li>Morning or evening â€” no timing restrictions apply</li>
           <li>Pairs well with retinoids, salicylic acid, and SPF</li>
           <li>Suitable for all skin types including sensitive skin</li>
         </ul>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Best for darker skin tones:</strong> Highly effective at reducing post-inflammatory hyperpigmentation (PIH) — a major concern for deeper complexions.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Best for darker skin tones:</strong> Highly effective at reducing post-inflammatory hyperpigmentation (PIH) â€” a major concern for deeper complexions.</span></div>
     `
   },
 
@@ -1032,21 +1032,21 @@ const learnData = {
       <div class="lm-block">
         <div class="lm-block-title">What it does</div>
         <ul>
-          <li>Speeds up skin cell turnover — prevents pore blockages forming</li>
+          <li>Speeds up skin cell turnover â€” prevents pore blockages forming</li>
           <li>Reduces microcomedone formation at the very source</li>
-          <li>Stimulates collagen production — fades acne scars over months</li>
+          <li>Stimulates collagen production â€” fades acne scars over months</li>
           <li>Adapalene 0.1% gel is available over-the-counter and very well-tolerated</li>
         </ul>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">How to start safely</div>
         <div class="lm-steps">
-          <div class="lm-step"><div class="lm-step-num">1</div><div class="lm-step-text"><strong>Weeks 1–2</strong><span>Apply 2× per week, evening only, to fully dry skin.</span></div></div>
-          <div class="lm-step"><div class="lm-step-num">2</div><div class="lm-step-text"><strong>Weeks 3–4</strong><span>Increase to every other night if tolerating well.</span></div></div>
-          <div class="lm-step"><div class="lm-step-num">3</div><div class="lm-step-text"><strong>Month 2+</strong><span>Nightly use. Expect visible results at 8–12 weeks.</span></div></div>
+          <div class="lm-step"><div class="lm-step-num">1</div><div class="lm-step-text"><strong>Weeks 1â€“2</strong><span>Apply 2Ã— per week, evening only, to fully dry skin.</span></div></div>
+          <div class="lm-step"><div class="lm-step-num">2</div><div class="lm-step-text"><strong>Weeks 3â€“4</strong><span>Increase to every other night if tolerating well.</span></div></div>
+          <div class="lm-step"><div class="lm-step-num">3</div><div class="lm-step-text"><strong>Month 2+</strong><span>Nightly use. Expect visible results at 8â€“12 weeks.</span></div></div>
         </div>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Initial purge:</strong> Skin may break out more in weeks 2–6 as cell turnover accelerates. This is expected and temporary — don't stop.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Initial purge:</strong> Skin may break out more in weeks 2â€“6 as cell turnover accelerates. This is expected and temporary â€” don't stop.</span></div>
     `
   },
 
@@ -1067,7 +1067,7 @@ const learnData = {
         <div class="lm-block-title">Choosing the right SPF</div>
         <div class="lm-chip-grid">
           <div class="lm-chip"><strong>Oily / acne-prone</strong><span>Lightweight gel or fluid; look for "non-comedogenic" on the label</span></div>
-          <div class="lm-chip"><strong>Dry / sensitive</strong><span>Mineral SPF (zinc oxide) — gentler and less likely to irritate</span></div>
+          <div class="lm-chip"><strong>Dry / sensitive</strong><span>Mineral SPF (zinc oxide) â€” gentler and less likely to irritate</span></div>
           <div class="lm-chip"><strong>Darker skin tones</strong><span>Tinted mineral SPF avoids any white cast on the skin</span></div>
           <div class="lm-chip"><strong>Daily use</strong><span>Reapply every 2 hours outdoors regardless of cloud cover</span></div>
         </div>
@@ -1076,7 +1076,7 @@ const learnData = {
     `
   },
 
-  /* ── WHAT CAUSES ACNE ── */
+  /* â”€â”€ WHAT CAUSES ACNE â”€â”€ */
   causes: {
     title: 'What Causes Acne',
     sub: 'The four main factors that lead to breakouts.',
@@ -1095,7 +1095,7 @@ const learnData = {
       </div>
       <div class="lm-block">
         <div class="lm-block-title">4. Inflammation</div>
-        <p>The immune system responds to bacterial overgrowth by sending white blood cells to the area. This inflammatory response causes redness, swelling, heat, and pain — the visible signs of inflammatory acne like papules and pustules.</p>
+        <p>The immune system responds to bacterial overgrowth by sending white blood cells to the area. This inflammatory response causes redness, swelling, heat, and pain â€” the visible signs of inflammatory acne like papules and pustules.</p>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">Other contributing factors</div>
@@ -1112,18 +1112,18 @@ const learnData = {
     `
   },
 
-  /* ── COMMON ACNE MYTHS ── */
+  /* â”€â”€ COMMON ACNE MYTHS â”€â”€ */
   myths: {
     title: 'Common Acne Myths',
     sub: 'Separating fact from fiction about acne.',
     html: `
       <div class="lm-block">
         <div class="lm-block-title">Myth 1: Only teenagers get acne</div>
-        <p><strong>Fact:</strong> Acne affects people of all ages. Studies show 40–55% of adults aged 20–40 experience breakouts. Hormonal fluctuations, stress, and genetics can trigger acne at any stage of life.</p>
+        <p><strong>Fact:</strong> Acne affects people of all ages. Studies show 40â€“55% of adults aged 20â€“40 experience breakouts. Hormonal fluctuations, stress, and genetics can trigger acne at any stage of life.</p>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">Myth 2: Acne is caused by poor hygiene</div>
-        <p><strong>Fact:</strong> Acne is primarily driven by hormones, genetics, and excess sebum production — not dirt. Over-washing can actually strip the skin barrier and worsen inflammation.</p>
+        <p><strong>Fact:</strong> Acne is primarily driven by hormones, genetics, and excess sebum production â€” not dirt. Over-washing can actually strip the skin barrier and worsen inflammation.</p>
       </div>
       <div class="lm-block">
         <div class="lm-block-title">Myth 3: Popping pimples makes them heal faster</div>
@@ -1141,7 +1141,7 @@ const learnData = {
         <div class="lm-block-title">Myth 6: Chocolate and greasy food cause acne</div>
         <p><strong>Fact:</strong> No direct causal link exists between chocolate or greasy foods and acne. However, high-glycemic diets (sugar, refined carbs) may influence hormones and inflammation in some individuals.</p>
       </div>
-      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Bottom line:</strong> Acne is a medical condition. Evidence-based treatments — not myths — are what lead to lasting improvement.</span></div>
+      <div class="lm-tip"><span class="lm-tip-dot"></span><span><strong>Bottom line:</strong> Acne is a medical condition. Evidence-based treatments â€” not myths â€” are what lead to lasting improvement.</span></div>
     `
   }
 };

@@ -109,7 +109,7 @@ nav {
   flex-shrink    : 0;
 }
 .nav-name {
-  font-family : 'DM Serif Display', serif;
+  font-family : 'Playfair Display', serif;
   font-size   : 1.2em;
   color       : var(--text);
   white-space : nowrap;
@@ -194,7 +194,7 @@ nav {
   margin-bottom  : 8px;
 }
 .page-title {
-  font-family   : 'DM Serif Display', serif;
+  font-family   : 'Playfair Display', serif;
   font-size     : 2.4em;
   color         : var(--text);
   letter-spacing: -0.5px;
@@ -213,7 +213,7 @@ nav {
   max-width    : 560px;
 }
 .section-title {
-  font-family   : 'DM Serif Display', serif;
+  font-family   : 'Playfair Display', serif;
   font-size     : 1.6em;
   color         : var(--text);
   letter-spacing: -0.3px;
@@ -397,7 +397,7 @@ body.theme-light .av-alert-warn {
   line-height: 1.7;
 }
 .av-footer-name {
-  font-family  : 'DM Serif Display', serif;
+  font-family  : 'Playfair Display', serif;
   font-size    : 1.1em;
   color        : var(--text);
   margin-bottom: 6px;
@@ -450,10 +450,56 @@ body.theme-light .av-alert-warn {
 .d5{animation-delay:.25s} .d6{animation-delay:.3s}
 
 /* ══════════════════════════════════
+   HAMBURGER BUTTON
+   ══════════════════════════════════ */
+.nav-burger {
+  display        : none;
+  flex-direction : column;
+  justify-content: center;
+  gap            : 5px;
+  width          : 36px;
+  height         : 36px;
+  background     : none;
+  border         : none;
+  cursor         : pointer;
+  padding        : 4px;
+  flex-shrink    : 0;
+}
+.nav-burger span {
+  display         : block;
+  width           : 22px;
+  height          : 2px;
+  background      : var(--text);
+  border-radius   : 2px;
+  transition      : all .25s;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ══════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════ */
 @media(max-width:768px){
   .page-wrap, .page-wrap-sm { padding:28px 18px 60px; }
-  .nav-in { padding:14px 18px; }
   .page-title { font-size:1.8em; }
+
+  .nav-in { padding:14px 18px; flex-wrap:wrap; }
+  .nav-burger { display:flex; }
+
+  .nav-links {
+    display       : none;
+    flex-direction: column;
+    width         : 100%;
+    gap           : 6px;
+    padding       : 10px 0 4px;
+    order         : 3;
+  }
+  .nav-links.open { display:flex; }
+  .nav-links .nav-tag {
+    width      : 100%;
+    text-align : center;
+    padding    : 10px 14px;
+    font-size  : 0.9em;
+  }
 }

@@ -10,9 +10,9 @@
       <span class="nav-name">AcneVision</span>
     </div>
 
-    <div class="nav-links">
+    <div class="nav-links" id="nav-links">
       {% if current_user.is_authenticated %}
-        <span class="nav-tag nav-tag-user">{{ current_user.username }}</span>
+        <a href="{{ url_for('profile') }}" class="nav-tag nav-tag-user">{{ current_user.username }}</a>
         <a href="{{ url_for('index') }}"   class="nav-tag">New Analysis</a>
         <a href="{{ url_for('history') }}" class="nav-tag">History</a>
         <a href="{{ url_for('learn') }}"   class="nav-tag">Learn</a>
@@ -24,7 +24,9 @@
       {% endif %}
     </div>
 
-    <!-- Theme toggle removed on this page only -->
+    <button class="nav-burger" id="nav-burger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 {% endblock %}

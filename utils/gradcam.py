@@ -21,10 +21,13 @@ def generate_gradcam_heatmap(model, image, class_index, save_path):
 
 def _real_gradcam(model, image, class_index, save_path):
     """
-    True Grad-CAM by rebuilding a single flat functional model
-    that explicitly chains: input -> mobilenet conv layer -> head layers.
-    This avoids the broken-gradient problem caused by calling a
-    nested sub-model inside another model.
+    True Grad-CAM targeting a higher-resolution intermediate layer inside
+    the nested MobileNetV2 sub-model (14x14), instead of its final 7x7
+    output. The 7x7 grid is too coarse to separate cheeks/forehead/chin/
+    jawline, and block_13_expand_relu is the deepest 14x14 layer that
+    still falls inside the fine-tuned (unfrozen) portion of the network
+    (see training/train.py: base.layers[-40:] are trainable), so its
+    activations are actually shaped by the acne-classification task.
     """
     # ── Step 1: Locate the MobileNetV2 sub-model ──────────────
     mobilenet = None
@@ -38,9 +41,13 @@ def _real_gradcam(model, image, class_index, save_path):
         return _flat_model_gradcam(model, image, class_index, save_path)
 
     # ── Step 2: Find best conv layer ───────────────────────────
+    # Preference order: highest-resolution layer still inside the
+    # fine-tuned range, falling back to coarser/frozen layers only
+    # if the preferred ones aren't present in this architecture.
     target_layer_name = None
-    for name in ['Conv_1', 'block_16_project_BN', 'block_16_project',
-                 'block_15_project_BN', 'out_relu']:
+    for name in ['block_13_expand_relu', 'block_13_expand_BN',
+                 'block_12_project_BN', 'block_16_project_BN',
+                 'Conv_1', 'out_relu']:
         try:
             mobilenet.get_layer(name)
             target_layer_name = name
@@ -61,9 +68,19 @@ def _real_gradcam(model, image, class_index, save_path):
     print(f"[INFO] Grad-CAM target layer: '{target_layer_name}' "
           f"in '{mobilenet.name}'")
 
-    # ── Step 3: Rebuild a clean functional graph ────────────────
-    # Find all layers AFTER the mobilenet block in the original model
-    # (GlobalAveragePooling2D, Dense layers, Dropout, etc.)
+    # ── Step 3: Two outputs from the SAME sub-model graph ────────
+    # Keras 3 won't let you reach into a nested sub-model's internal
+    # tensor from the *outer* model's graph (that's the "KerasTensor
+    # cannot be used..." / graph KeyError you get if you try). But
+    # asking the sub-model itself for two of its own tensors is fine
+    # -- it's one self-contained functional graph.
+    mobilenet_multi = tf.keras.Model(
+        inputs=mobilenet.input,
+        outputs=[mobilenet.get_layer(target_layer_name).output, mobilenet.output],
+    )
+
+    # Head layers (GlobalAveragePooling2D, Dense, Dropout, ...) that
+    # come after the mobilenet block in the outer model.
     post_mobilenet_layers = []
     found_mobilenet = False
     for layer in model.layers:
@@ -73,22 +90,6 @@ def _real_gradcam(model, image, class_index, save_path):
         if found_mobilenet:
             post_mobilenet_layers.append(layer)
 
-    # Get the conv layer's output tensor from mobilenet
-    conv_layer_output = mobilenet.get_layer(target_layer_name).output
-
-    # Build a sub-model: mobilenet.input -> conv_layer_output
-    conv_extractor = tf.keras.Model(
-        inputs=mobilenet.input,
-        outputs=conv_layer_output
-    )
-
-    # Build a sub-model: mobilenet.input -> mobilenet's final output
-    # (this is what feeds into the post-mobilenet head layers)
-    mobilenet_full = tf.keras.Model(
-        inputs=mobilenet.input,
-        outputs=mobilenet.output
-    )
-
     # ── Step 4: Preprocess image ────────────────────────────────
     img_resized = cv2.resize(image, (224, 224))
     img_tensor  = tf.cast(
@@ -96,30 +97,37 @@ def _real_gradcam(model, image, class_index, save_path):
     ) / 255.0
 
     # ── Step 5: Compute Grad-CAM using GradientTape ──────────────
+    # Everything from here on runs eagerly (real tensors, not
+    # symbolic graph-building), so replaying the head layers by hand
+    # and bypassing the final softmax for raw logits is safe.
     with tf.GradientTape() as tape:
-        # Get conv layer activations (watched automatically since
-        # they come from a forward pass inside the tape)
-        conv_output = conv_extractor(img_tensor, training=False)
+        conv_output, mob_out = mobilenet_multi(img_tensor, training=False)
         tape.watch(conv_output)
 
-        # Continue the forward pass: mobilenet output -> head layers
-        x = mobilenet_full(img_tensor, training=False)
-        for layer in post_mobilenet_layers:
+        x = mob_out
+        for layer in post_mobilenet_layers[:-1]:
             x = layer(x, training=False)
 
-        predictions = x
-        loss = predictions[:, class_index]
+        # Last layer is the softmax classifier head. Softmax saturates
+        # near-confident predictions and washes out the gradient
+        # signal, so use the raw logit instead.
+        last_layer = post_mobilenet_layers[-1]
+        if getattr(last_layer, 'activation', None) is not None and hasattr(last_layer, 'kernel'):
+            logits = tf.matmul(x, last_layer.kernel) + last_layer.bias
+        else:
+            logits = last_layer(x, training=False)
+
+        loss = logits[:, class_index]
 
     grads = tape.gradient(loss, conv_output)
 
     if grads is None:
-        print("[WARNING] Gradients still None after rebuild. "
-              "Falling back to saliency map.")
+        print("[WARNING] Gradients still None. Falling back to saliency map.")
         return _saliency_map(model, image, class_index, save_path)
 
-    # ── Step 6: Build the heatmap ─────────────────────────────────
-    grads_val = grads.numpy()[0]        # (H, W, C)
-    conv_val  = conv_output.numpy()[0]  # (H, W, C)
+    # ── Step 7: Build the heatmap ─────────────────────────────────
+    grads_val = grads.numpy()[0]       # (H, W, C)
+    conv_val  = conv_output.numpy()[0] # (H, W, C)
 
     # Global average pool gradients across spatial dimensions
     weights = np.mean(grads_val, axis=(0, 1))  # (C,)
@@ -136,7 +144,8 @@ def _real_gradcam(model, image, class_index, save_path):
     if heatmap.max() > 0:
         heatmap = heatmap / heatmap.max()
 
-    print("[INFO] True Grad-CAM heatmap computed successfully.")
+    print(f"[INFO] True Grad-CAM heatmap computed successfully "
+          f"({conv_val.shape[0]}x{conv_val.shape[1]} grid).")
     return _save_heatmap(heatmap, image, save_path, concentrate=True)
 
 
@@ -230,15 +239,26 @@ def _save_heatmap(heatmap, image, save_path, concentrate=False):
     """
     try:
         h, w = image.shape[:2]
-        heatmap_resized = cv2.resize(heatmap, (w, h))
+        # Cubic interpolation instead of the default bilinear avoids the
+        # hard-edged diamond/rhombus artifact you get from upscaling a
+        # coarse grid (7x7-14x14) straight to full image resolution.
+        heatmap_resized = cv2.resize(heatmap, (w, h), interpolation=cv2.INTER_CUBIC)
+        heatmap_resized = np.clip(heatmap_resized, 0, None)
 
         if concentrate:
             # Power transform increases contrast — pushes mid-low
-            # values down and keeps only the strongest region bright,
-            # producing the concentrated red/yellow hotspot look
-            heatmap_resized = np.power(heatmap_resized, 1.8)
+            # values down and keeps the strongest region brightest,
+            # producing a concentrated red/yellow hotspot look. Kept
+            # gentle (1.2) so it no longer collapses the whole map
+            # down to one blocky cell.
+            heatmap_resized = np.power(heatmap_resized, 1.2)
             if heatmap_resized.max() > 0:
                 heatmap_resized /= heatmap_resized.max()
+
+        # Smooth away the residual grid-cell blockiness from the low
+        # native resolution of the conv feature map.
+        blur_k = max(3, (min(h, w) // 40) | 1)  # odd kernel, scales with image size
+        heatmap_resized = cv2.GaussianBlur(heatmap_resized, (blur_k, blur_k), 0)
 
         heatmap_uint8 = np.uint8(255 * heatmap_resized)
         colored = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)

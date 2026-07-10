@@ -32,7 +32,7 @@
     .nav-in { max-width:1200px; margin:0 auto; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; }
     .nav-brand { display:flex; align-items:center; gap:12px; }
     .nav-mark { width:36px; height:36px; background:linear-gradient(135deg,var(--rose),var(--gold)); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:0.9em; }
-    .nav-name { font-family:'DM Serif Display',serif; font-size:1.3em; color:var(--white); letter-spacing:-0.5px; }
+    .nav-name { font-family:'Playfair Display',serif; font-size:1.3em; color:var(--white); letter-spacing:-0.5px; }
     .btn-back { display:inline-flex; align-items:center; gap:8px; padding:9px 20px; border-radius:10px; background:var(--bg-2); border:1px solid var(--border); color:var(--text-2); font-size:0.85em; font-weight:600; text-decoration:none; transition:all 0.25s; font-family:'DM Sans',sans-serif; }
     .btn-back:hover { border-color:var(--rose); color:var(--rose); }
 
@@ -46,7 +46,7 @@
     .d7{animation-delay:0.35s;} .d8{animation-delay:0.4s;}
 
     .card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:32px; margin-bottom:20px; }
-    .card-title { font-family:'DM Serif Display',serif; font-size:1.25em; color:var(--white); margin-bottom:22px; }
+    .card-title { font-family:'Playfair Display',serif; font-size:1.25em; color:var(--white); margin-bottom:22px; }
 
     /* ── SEVERITY SCALE (Lovable-style) ── */
     .sev-scale-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px; margin-bottom:20px; }
@@ -174,13 +174,15 @@
     .rfooter { text-align:center; padding:28px; color:var(--text-3); font-size:0.82em; border-top:1px solid var(--border); margin-top:16px; line-height:1.7; }
 
     @media(max-width:768px){
-      .img-row   { flex-direction:column; align-items:center; }
-      .img-box   { max-width:100%; }
-      .wrap      { padding:28px 20px 48px; }
-      .skin-grid { grid-template-columns:1fr 1fr; }
-      .lesion-grid { grid-template-columns:1fr; }
-      .zones-row { gap:7px; }
-      .zone-chip { min-width:80px; }
+      .img-row        { flex-direction:column; align-items:center; }
+      .img-box        { max-width:100%; }
+      .wrap           { padding:28px 16px 48px; }
+      .skin-grid      { grid-template-columns:1fr; }
+      .lesion-grid    { grid-template-columns:1fr; }
+      .zones-row      { gap:7px; }
+      .zone-chip      { min-width:80px; }
+      .sev-scale-title{ font-size:1.8em; }
+      .nav-in         { padding:14px 16px; }
     }
 </style>
 {% endblock %}
@@ -188,194 +190,77 @@
 {% block content %}
 <div class="wrap">
 
-  <!-- ══ ANALYSIS IMAGES (moved to top) ══ -->
+  <!-- ══ USER + IMAGES ══ -->
   <div class="card fade d1">
-    <div class="card-title">Analysis Images</div>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1em;flex-shrink:0;">
+        {{ current_user.username[0].upper() }}
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:0.97em;color:var(--white);">{{ current_user.username }}</div>
+        <div style="font-size:0.78em;color:var(--text-3);">{{ timestamp }}</div>
+      </div>
+    </div>
     <div class="img-row {% if not heatmap_image %}single-img{% endif %}">
       <div class="img-box">
-        <img src="{{ url_for('static', filename='uploads/' ~ face_image) }}" alt="Face">
-        <div class="img-label">Detected Face</div>
+        <img src="{{ img_src(face_image) }}" alt="Face">
+        <div class="img-label">Your Photo</div>
       </div>
       {% if heatmap_image %}
       <div class="img-box">
-        <img src="{{ url_for('static', filename='heatmaps/' ~ heatmap_image) }}" alt="Heatmap">
-        <div class="img-label">AI Focus Map — areas the model weighted most</div>
+        <img src="{{ img_src(heatmap_image, 'heatmaps') }}" alt="Heatmap">
+        <div class="img-label">AI Focus Map</div>
       </div>
       {% endif %}
     </div>
   </div>
 
-  <!-- ══ SEVERITY SCALE CARD ══ -->
+  <!-- ══ ANALYSIS ══ -->
   <div class="sev-scale-card fade d2">
-    <div class="sev-scale-eyebrow">Acne Severity</div>
+    <div class="sev-scale-eyebrow">Analysis Result</div>
     <div class="sev-scale-title">{{ severity }}</div>
     <div class="sev-scale-conf">
-      <strong>{{ confidence }}%</strong> confidence &nbsp;·&nbsp; {{ timestamp }}
-      {% if is_combined %}&nbsp;·&nbsp; <span style="opacity:0.7;">(Combined prediction)</span>{% endif %}
+      <strong>{{ confidence }}%</strong> confidence
     </div>
-
-    <!-- Gradient scale bar -->
     <div class="sev-bar-wrap">
       <div class="sev-bar-track">
-        <div class="sev-segment seg-clear    {% if raw_class == 'clear_skin' %}active-seg{% elif raw_class in ['mild','moderate','severe'] %}{% else %}{% endif %}"
-             style="opacity:{% if raw_class == 'clear_skin' %}1{% else %}0.35{% endif %}"></div>
-        <div class="sev-segment seg-mild     {% if raw_class == 'mild' %}active-seg{% endif %}"
-             style="opacity:{% if raw_class in ['mild','moderate','severe'] %}{% if raw_class == 'mild' %}1{% else %}0.35{% endif %}{% else %}0.25{% endif %}"></div>
-        <div class="sev-segment seg-moderate {% if raw_class == 'moderate' %}active-seg{% endif %}"
-             style="opacity:{% if raw_class in ['moderate','severe'] %}{% if raw_class == 'moderate' %}1{% else %}0.35{% endif %}{% else %}0.2{% endif %}"></div>
-        <div class="sev-segment seg-severe   {% if raw_class == 'severe' %}active-seg{% endif %}"
-             style="opacity:{% if raw_class == 'severe' %}1{% else %}0.15{% endif %}"></div>
+        <div class="sev-segment seg-clear"    style="opacity:{% if raw_class == 'clear_skin' %}1{% else %}0.35{% endif %}"></div>
+        <div class="sev-segment seg-mild"     style="opacity:{% if raw_class == 'mild' %}1{% else %}0.25{% endif %}"></div>
+        <div class="sev-segment seg-moderate" style="opacity:{% if raw_class == 'moderate' %}1{% else %}0.2{% endif %}"></div>
+        <div class="sev-segment seg-severe"   style="opacity:{% if raw_class == 'severe' %}1{% else %}0.15{% endif %}"></div>
       </div>
       <div class="sev-bar-labels">
         <span>Clear</span><span>Mild</span><span>Moderate</span><span>Severe</span>
       </div>
     </div>
-
     <div class="sev-desc">{{ ai_summary }}</div>
-
-    <!-- Click to expand evidence -->
   </div>
 
-  <!-- ══ SKIN TYPE / INFLAMMATION / SCARRING / ACTION GRID ══ -->
-  <div class="skin-grid fade d2">
-    <div class="skin-cell">
-      <div class="skin-cell-label">Skin Type</div>
-      <div class="skin-cell-value">{{ skin_type }}</div>
-    </div>
-    <div class="skin-cell">
-      <div class="skin-cell-label">Inflammation</div>
-      <div class="skin-cell-value
-        {% if inflammation_label == 'Severe'   %}risk-high
-        {% elif inflammation_label == 'Moderate'%}risk-moderate
-        {% else %}{% endif %}">{{ inflammation_label }}</div>
-    </div>
-    <div class="skin-cell">
-      <div class="skin-cell-label">Scarring Risk</div>
-      <div class="skin-cell-value
-        {% if scarring_risk == 'High'     %}risk-high
-        {% elif scarring_risk == 'Moderate'%}risk-moderate
-        {% else %}risk-low{% endif %}">{{ scarring_risk }}</div>
-    </div>
-    <div class="skin-cell">
-      <div class="skin-cell-label">Action</div>
-      <div class="skin-cell-value">{{ action_label }}</div>
-    </div>
-  </div>
-
-  <!-- ══ FIND A DERMATOLOGIST ALERT (mild / moderate / severe only) ══ -->
+  <!-- ══ DERMATOLOGIST ALERT ══ -->
   {% if show_find_derm %}
   <div class="derm-alert fade d3">
     <div class="derm-alert-top">
       <span class="derm-alert-icon">⚠️</span>
       <div>
-        <div class="derm-alert-title">A dermatologist visit is recommended</div>
+        <div class="derm-alert-title">See a Dermatologist</div>
         <div class="derm-alert-text">
           {% if raw_class == 'severe' %}
-            Professional guidance is strongly recommended. Severe acne can lead to permanent scarring without appropriate medical treatment. A dermatologist can prescribe oral or topical prescription-strength treatments tailored to your skin.
+            Severe acne requires prescription treatment. A dermatologist can prescribe oral isotretinoin, antibiotics, or hormonal therapy — please book an appointment as soon as possible.
           {% elif raw_class == 'moderate' %}
-            Professional guidance is recommended to manage the inflammatory acne effectively while simultaneously treating any post-inflammatory hyperpigmentation, which is highly responsive to prescription-strength retinoids or azelaic acid.
+            A dermatologist can prescribe topical retinoids or oral antibiotics that are significantly more effective than over-the-counter products for your level of acne.
           {% else %}
-            A dermatologist can help you establish the right treatment plan early — catching mild acne before it progresses to moderate or severe stages is much easier with professional guidance.
+            A dermatologist can help you start the right treatment early and prevent your acne from progressing further.
           {% endif %}
         </div>
       </div>
     </div>
-    <a href="{{ url_for('clinics') }}" class="btn-find-derm">
-      🗺 Find a dermatologist
-    </a>
+    <a href="{{ url_for('clinics') }}" class="btn-find-derm">Find a Dermatologist</a>
   </div>
   {% endif %}
-
-  <!-- ══ LESION BREAKDOWN ══ -->
-  {% if lesion_breakdown %}
-  <div class="card fade d3">
-    <div class="lesion-title">What's on your skin</div>
-    <p class="lesion-subtitle">Based on visual analysis of your uploaded image, the following lesion types were identified. Counts are estimates — consult a dermatologist for a clinical diagnosis.</p>
-    <div class="lesion-grid">
-      {% for lesion in lesion_breakdown %}
-      <div class="lesion-card">
-        <div class="lesion-head">
-          <div class="lesion-name">
-            <span class="lesion-dot" style="background:{{ lesion.color }};"></span>
-            {{ lesion.name }}
-          </div>
-          <span class="lesion-count">
-            ~{{ lesion.count }} estimated
-          </span>
-        </div>
-        <div class="lesion-desc">{{ lesion.description }}</div>
-        <div class="lesion-sev-bar">
-          <div class="lesion-sev-fill"
-               data-w="{{ lesion.severity_pct | default(50) }}"
-               style="width:0%; background:{{ lesion.color }};"></div>
-        </div>
-        <div class="lesion-areas"><strong>Primary areas:</strong> {{ lesion.areas }}</div>
-        {% if lesion.clinical_note %}
-        <div class="lesion-note">⚑ {{ lesion.clinical_note }}</div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- ══ WHAT WE OBSERVED ══ -->
-  <div class="card fade d4">
-    <div class="card-title">What we observed</div>
-    <p style="font-size:0.92em; color:var(--text-2); line-height:1.8;">{{ what_we_observed }}</p>
-  </div>
-
-  <!-- ══ WHAT THIS MEANS ══ -->
-  <div class="card fade d4">
-    <div class="card-title">What this means</div>
-    <p style="font-size:0.92em; color:var(--text-2); line-height:1.8;">{{ what_this_means }}</p>
-  </div>
-
-  <!-- ══ AFFECTED FACIAL ZONES ══ -->
-  <div class="card fade d5">
-    <div class="zones-title">Affected facial zones</div>
-    <div class="zones-row">
-      {% set zones_list = [
-        ('FOREHEAD', zone_percentages.forehead),
-        ('CHEEKS',   zone_percentages.cheeks),
-        ('NOSE',     zone_percentages.nose),
-        ('CHIN',     zone_percentages.chin),
-        ('JAWLINE',  zone_percentages.jawline),
-      ] %}
-      {% for zone_name, zone_pct in zones_list %}
-      <div class="zone-chip" onclick="openZonePopup('{{ zone_name }}', {{ zone_pct }})">
-        <div class="zone-chip-label">{{ zone_name }}</div>
-        <div class="zone-chip-pct">{{ zone_pct }}%</div>
-        <div class="zone-chip-bar">
-          <div class="zone-chip-fill" data-w="{{ zone_pct }}" style="width:0%;
-            background: {% if zone_pct >= 70 %}#dc2626{% elif zone_pct >= 40 %}#ea580c{% elif zone_pct >= 15 %}#d97706{% else %}#059669{% endif %};"></div>
-        </div>
-        <div class="zone-chip-tap">Tap for details</div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- ══ ZONE DETAIL POPUP ══ -->
-  <div class="zone-popup-overlay" id="zone-popup-overlay" onclick="closeZonePopup(event)">
-    <div class="zone-popup">
-      <button class="zone-popup-close" onclick="closeZonePopup(null, true)">×</button>
-      <div class="zone-popup-name" id="zp-name"></div>
-      <div class="zone-popup-pct" id="zp-pct"></div>
-      <div class="zone-popup-pct-label">affected</div>
-      <div class="zone-popup-bar">
-        <div class="zone-popup-bar-fill" id="zp-bar"></div>
-      </div>
-      <div class="zone-popup-section-label">Lesion types found</div>
-      <div class="zone-popup-lesions" id="zp-lesions"></div>
-      <div class="zone-popup-tip-label">Tip for this zone</div>
-      <div class="zone-popup-tip" id="zp-tip"></div>
-    </div>
-  </div>
 
   <!-- ══ RECOMMENDATIONS ══ -->
-  <div class="card fade d8">
-    <div class="card-title">Recommendations</div>
+  <div class="card fade d4">
+    <div class="card-title">Personalised Recommendations</div>
     <div class="rec-grid">
       {% for rec in recommendations %}
       <div class="rec-card">
@@ -387,42 +272,17 @@
     </div>
   </div>
 
-  <!-- ══ DOWNLOAD REPORT ══ -->
-  {% if report_file %}
-  <div class="card fade d7" style="text-align:center;">
-    <div class="card-title">Full Report</div>
-    <p style="font-size:0.88em;color:var(--text-2);margin-bottom:24px;">Download a complete HTML report with all findings and recommendations</p>
-    <a href="{{ url_for('static', filename='reports/' ~ report_file) }}" class="dl-btn" target="_blank">Download Report</a>
+  <!-- DISCLAIMER -->
+  <div class="card fade" style="border-color:rgba(193,103,74,0.25);background:rgba(193,103,74,0.04);text-align:center;padding:20px 28px;">
+    <p style="font-size:0.82em;color:var(--text-2);line-height:1.7;">
+      <strong style="color:var(--white);">Medical Disclaimer:</strong>
+      AcneVision is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
+      Always consult a qualified dermatologist or healthcare provider regarding any skin condition.
+    </p>
   </div>
-  {% endif %}
 
   <div class="rfooter">AcneVision &copy; 2026. All rights reserved.</div>
 </div><!-- /wrap -->
-
-<!-- ══ DIAGNOSIS MODAL ══ -->
-<div id="diagnosisModal" class="diag-modal">
-  <div class="diag-modal-content">
-    <button class="diag-modal-close" onclick="closeDiagnosisModal()">&times;</button>
-    <div class="diag-modal-title-row">
-      <span id="modalDot" class="diag-modal-dot"></span>
-      <h4 id="modalName" class="diag-modal-name">Condition Name</h4>
-    </div>
-    <p id="modalScientific" class="diag-modal-scientific">Scientific definition here</p>
-    <div id="modalTags" class="diag-modal-tags"></div>
-    <div class="diag-modal-block">
-      <h5>WHAT IT IS</h5>
-      <p id="modalWhatItIs"></p>
-    </div>
-    <div class="diag-modal-block">
-      <h5>HOW IT FORMS</h5>
-      <p id="modalHowItForms"></p>
-    </div>
-    <div class="diag-modal-block">
-      <h5>COMMON CAUSES</h5>
-      <ul id="modalCauses" class="diag-modal-list"></ul>
-    </div>
-  </div>
-</div>
 
 <!-- ══ FLOATING CHAT WIDGET ══ -->
 <div id="chat-fab" onclick="openChat()">

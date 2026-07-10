@@ -1,10 +1,18 @@
 """
-AcneVision - Fixed Face Detection v2
-Tighter, consistent cropping so Grad-CAM and CNN only see the face.
+AcneVision - Fixed Face Detection v3
+Primary: MediaPipe (handles tilted/angled faces robustly).
+Fallback: Haar cascades → skin region.
 """
 import cv2
 import numpy as np
 import os
+
+try:
+    import mediapipe as mp
+    _MP_FACE = mp.solutions.face_detection
+    _MEDIAPIPE_OK = True
+except Exception:
+    _MEDIAPIPE_OK = False
 
 THIS_FILE = os.path.abspath(__file__)
 UTILS_DIR = os.path.dirname(THIS_FILE)
@@ -38,6 +46,12 @@ def detect_face(image_path):
     h, w = img_bgr.shape[:2]
     print(f"[INFO] Image shape: {img_bgr.shape}")
 
+    # MediaPipe first — handles tilted/angled faces that Haar cascades miss
+    if _MEDIAPIPE_OK:
+        face_rgb, coords = _detect_mediapipe(img_bgr, w, h)
+        if face_rgb is not None:
+            return face_rgb, coords
+
     face_rgb, coords = _detect_frontal(img_bgr, w, h)
     if face_rgb is not None:
         return face_rgb, coords
@@ -56,6 +70,39 @@ def detect_face(image_path):
 
     print("[INFO] No face detected in image")
     return None, None
+
+
+def _detect_mediapipe(img_bgr, w, h):
+    """MediaPipe face detection — robust to tilted/angled faces."""
+    try:
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        with _MP_FACE.FaceDetection(model_selection=1, min_detection_confidence=0.5) as detector:
+            results = detector.process(img_rgb)
+
+        if not results.detections:
+            return None, None
+
+        best = max(results.detections, key=lambda d: d.score[0])
+        bb = best.location_data.relative_bounding_box
+
+        x  = int(bb.xmin * w)
+        y  = int(bb.ymin * h)
+        fw = int(bb.width * w)
+        fh = int(bb.height * h)
+
+        face_area = fw * fh
+        if face_area < MIN_FACE_AREA_RATIO * w * h:
+            print(f"[INFO] MediaPipe: detected region too small ({face_area/(w*h):.2%})")
+            return None, None
+
+        print(f"[INFO] MediaPipe face detected at ({x},{y}) size {fw}x{fh} "
+              f"confidence={best.score[0]:.2f}")
+        crop = _crop_with_padding(img_bgr, x, y, fw, fh, w, h, padding=CROP_PADDING)
+        return cv2.cvtColor(crop, cv2.COLOR_BGR2RGB), (x, y, fw, fh)
+
+    except Exception as e:
+        print(f"[INFO] MediaPipe detection failed: {e}")
+        return None, None
 
 
 def _detect_frontal(img_bgr, w, h):
